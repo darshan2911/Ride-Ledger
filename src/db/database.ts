@@ -1,5 +1,6 @@
 import type { AppSettings, CarpoolOwner } from './types';
 import * as SQLite from 'expo-sqlite';
+import { getTodayDateString } from '@/lib/currency';
 import { SCHEMA_STATEMENTS } from './schema';
 
 let dbInstance: SQLite.SQLiteDatabase | null = null;
@@ -10,6 +11,12 @@ export const DB_NAME = 'rideledger.db';
 export function getDatabase(): SQLite.SQLiteDatabase {
   if (!dbInstance) {
     dbInstance = SQLite.openDatabaseSync(DB_NAME);
+    try {
+      dbInstance.execSync('PRAGMA foreign_keys = ON;');
+    }
+    catch (e) {
+      console.warn('Failed to enable foreign keys:', e);
+    }
   }
   if (!isInitialized) {
     initDatabase();
@@ -20,6 +27,12 @@ export function getDatabase(): SQLite.SQLiteDatabase {
 export function initDatabase(): SQLite.SQLiteDatabase {
   if (!dbInstance) {
     dbInstance = SQLite.openDatabaseSync(DB_NAME);
+    try {
+      dbInstance.execSync('PRAGMA foreign_keys = ON;');
+    }
+    catch (e) {
+      console.warn('Failed to enable foreign keys:', e);
+    }
   }
   const db = dbInstance;
   if (isInitialized)
@@ -44,7 +57,7 @@ export function initDatabase(): SQLite.SQLiteDatabase {
   );
 
   if (!existingSettings) {
-    const todayDate = new Date().toISOString().slice(0, 10);
+    const todayDate = getTodayDateString();
     db.runSync(
       `INSERT INTO app_settings (
         id, reminder_enabled, reminder_hour, reminder_minute,
@@ -72,7 +85,7 @@ export function initDatabase(): SQLite.SQLiteDatabase {
   // Safe migration: Add tracking_start_date to app_settings if upgrading
   try {
     db.runSync('ALTER TABLE app_settings ADD COLUMN tracking_start_date TEXT');
-    const todayDate = new Date().toISOString().slice(0, 10);
+    const todayDate = getTodayDateString();
     db.runSync('UPDATE app_settings SET tracking_start_date = ? WHERE tracking_start_date IS NULL', [todayDate]);
   }
   catch {
@@ -84,7 +97,7 @@ export function initDatabase(): SQLite.SQLiteDatabase {
 
 export function resetToFactoryCleanSlate() {
   const db = getDatabase();
-  const todayDate = new Date().toISOString().slice(0, 10);
+  const todayDate = getTodayDateString();
   db.withTransactionSync(() => {
     db.runSync('DELETE FROM payment_allocations');
     db.runSync('DELETE FROM payments');

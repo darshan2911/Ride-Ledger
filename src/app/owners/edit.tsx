@@ -50,10 +50,25 @@ export default function EditOwnerScreen() {
   }, [owner, isEditing, settings.default_owner_id]);
 
   const handleSave = () => {
-    if (!name.trim()) {
+    const trimmedName = name.trim();
+    if (!trimmedName) {
       showMessage({
         message: 'Name Required',
         description: 'Please enter the carpool owner’s name.',
+        type: 'warning',
+      });
+      return;
+    }
+
+    // Edge Case EC-C2: Prevent duplicate owner names
+    const allOwners = OwnersRepo.getAllOwners(true);
+    const hasDuplicate = allOwners.some(
+      o => o.name.toLowerCase() === trimmedName.toLowerCase() && o.id !== params.id,
+    );
+    if (hasDuplicate) {
+      showMessage({
+        message: 'Duplicate Driver Name',
+        description: `A driver named "${trimmedName}" already exists. Please choose a distinct name.`,
         type: 'warning',
       });
       return;
@@ -64,11 +79,21 @@ export default function EditOwnerScreen() {
       const morningFarePaise = rupeesToPaise(morningFareStr);
       const eveningFarePaise = rupeesToPaise(eveningFareStr);
 
+      if (morningFarePaise < 0 || eveningFarePaise < 0) {
+        showMessage({
+          message: 'Invalid Fare',
+          description: 'Fares cannot be negative.',
+          type: 'warning',
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
       let savedOwnerId = params.id;
 
       if (isEditing && params.id) {
         OwnersRepo.updateOwner(params.id, {
-          name: name.trim(),
+          name: trimmedName,
           phone: phone.trim() || null,
           default_morning_fare_paise: morningFarePaise,
           default_evening_fare_paise: eveningFarePaise,
@@ -77,7 +102,7 @@ export default function EditOwnerScreen() {
       }
       else {
         const created = OwnersRepo.createOwner({
-          name: name.trim(),
+          name: trimmedName,
           phone: phone.trim() || null,
           default_morning_fare_paise: morningFarePaise,
           default_evening_fare_paise: eveningFarePaise,

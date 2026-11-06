@@ -89,6 +89,16 @@ export default function RecordPaymentScreen() {
   };
 
   const handleConfirmPayment = () => {
+    // Edge Case EC-D4: Future payment date validation
+    if (paymentDate > getTodayDateString()) {
+      showMessage({
+        message: 'Invalid Payment Date',
+        description: 'Payment date cannot be in the future.',
+        type: 'warning',
+      });
+      return;
+    }
+
     const amountPaise = rupeesToPaise(amountStr);
     if (amountPaise <= 0) {
       showMessage({

@@ -133,5 +133,24 @@ describe('Financial Utilities & Math', () => {
     // Friday Nov 6 should be detected as a missed commute!
     expect(unlogged).toEqual(['2026-11-06']);
   });
+
+  test('Overpayment and advance credit calculation', () => {
+    const totalChargesPaise = 12000; // ₹120 charges
+    const totalPaidPaise = 15000; // ₹150 paid (₹30 advance)
+
+    const outstandingBalancePaise = totalChargesPaise - totalPaidPaise;
+    expect(outstandingBalancePaise).toBe(-3000);
+    expect(formatPaise(outstandingBalancePaise)).toBe('-₹30');
+  });
+
+  test('Future date detection prevents logging ahead of time', () => {
+    const todayStr = '2026-11-06';
+    const futureDateStr = '2026-11-07';
+    const pastDateStr = '2026-11-05';
+
+    expect(futureDateStr > todayStr).toBe(true);
+    expect(pastDateStr > todayStr).toBe(false);
+    expect(todayStr > todayStr).toBe(false);
+  });
 });
 

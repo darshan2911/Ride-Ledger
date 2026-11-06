@@ -9,26 +9,32 @@ export const OwnersRepo = {
     const sql = `
       SELECT
         o.*,
-        COUNT(DISTINCT t.id) as total_trips,
-        COALESCE(SUM(t.fare_paise), 0) as total_charges_paise,
-        COALESCE(SUM(pa.allocated_amount_paise), 0) as total_paid_paise,
-        (COALESCE(SUM(t.fare_paise), 0) - COALESCE(SUM(pa.allocated_amount_paise), 0)) as outstanding_balance_paise,
-        COUNT(DISTINCT CASE WHEN (t.fare_paise > 0 AND (t_alloc.total_allocated IS NULL OR t_alloc.total_allocated < t.fare_paise)) THEN t.id END) as unpaid_trips_count,
+        (SELECT COUNT(*) FROM commute_trips WHERE owner_id = o.id) as total_trips,
+        (SELECT COALESCE(SUM(fare_paise), 0) FROM commute_trips WHERE owner_id = o.id) as total_charges_paise,
+        (SELECT COALESCE(SUM(amount_paise), 0) FROM payments WHERE owner_id = o.id) as total_paid_paise,
+        (
+          (SELECT COALESCE(SUM(fare_paise), 0) FROM commute_trips WHERE owner_id = o.id) -
+          (SELECT COALESCE(SUM(amount_paise), 0) FROM payments WHERE owner_id = o.id)
+        ) as outstanding_balance_paise,
+        (
+          SELECT COUNT(*)
+          FROM commute_trips ct
+          WHERE ct.owner_id = o.id
+            AND ct.fare_paise > 0
+            AND ct.id NOT IN (
+              SELECT pa.commute_trip_id
+              FROM payment_allocations pa
+              GROUP BY pa.commute_trip_id
+              HAVING SUM(pa.allocated_amount_paise) >= ct.fare_paise
+            )
+        ) as unpaid_trips_count,
         (
           SELECT MAX(p.payment_date)
           FROM payments p
           WHERE p.owner_id = o.id
         ) as last_payment_date
       FROM carpool_owners o
-      LEFT JOIN commute_trips t ON t.owner_id = o.id
-      LEFT JOIN (
-        SELECT commute_trip_id, SUM(allocated_amount_paise) as total_allocated
-        FROM payment_allocations
-        GROUP BY commute_trip_id
-      ) t_alloc ON t_alloc.commute_trip_id = t.id
-      LEFT JOIN payment_allocations pa ON pa.commute_trip_id = t.id
       ${activeClause}
-      GROUP BY o.id
       ORDER BY o.is_active DESC, o.name ASC
     `;
 
@@ -40,26 +46,32 @@ export const OwnersRepo = {
     const sql = `
       SELECT
         o.*,
-        COUNT(DISTINCT t.id) as total_trips,
-        COALESCE(SUM(t.fare_paise), 0) as total_charges_paise,
-        COALESCE(SUM(pa.allocated_amount_paise), 0) as total_paid_paise,
-        (COALESCE(SUM(t.fare_paise), 0) - COALESCE(SUM(pa.allocated_amount_paise), 0)) as outstanding_balance_paise,
-        COUNT(DISTINCT CASE WHEN (t.fare_paise > 0 AND (t_alloc.total_allocated IS NULL OR t_alloc.total_allocated < t.fare_paise)) THEN t.id END) as unpaid_trips_count,
+        (SELECT COUNT(*) FROM commute_trips WHERE owner_id = o.id) as total_trips,
+        (SELECT COALESCE(SUM(fare_paise), 0) FROM commute_trips WHERE owner_id = o.id) as total_charges_paise,
+        (SELECT COALESCE(SUM(amount_paise), 0) FROM payments WHERE owner_id = o.id) as total_paid_paise,
+        (
+          (SELECT COALESCE(SUM(fare_paise), 0) FROM commute_trips WHERE owner_id = o.id) -
+          (SELECT COALESCE(SUM(amount_paise), 0) FROM payments WHERE owner_id = o.id)
+        ) as outstanding_balance_paise,
+        (
+          SELECT COUNT(*)
+          FROM commute_trips ct
+          WHERE ct.owner_id = o.id
+            AND ct.fare_paise > 0
+            AND ct.id NOT IN (
+              SELECT pa.commute_trip_id
+              FROM payment_allocations pa
+              GROUP BY pa.commute_trip_id
+              HAVING SUM(pa.allocated_amount_paise) >= ct.fare_paise
+            )
+        ) as unpaid_trips_count,
         (
           SELECT MAX(p.payment_date)
           FROM payments p
           WHERE p.owner_id = o.id
         ) as last_payment_date
       FROM carpool_owners o
-      LEFT JOIN commute_trips t ON t.owner_id = o.id
-      LEFT JOIN (
-        SELECT commute_trip_id, SUM(allocated_amount_paise) as total_allocated
-        FROM payment_allocations
-        GROUP BY commute_trip_id
-      ) t_alloc ON t_alloc.commute_trip_id = t.id
-      LEFT JOIN payment_allocations pa ON pa.commute_trip_id = t.id
       WHERE o.id = ?
-      GROUP BY o.id
     `;
     return db.getFirstSync<OwnerSummary>(sql, [id]);
   },

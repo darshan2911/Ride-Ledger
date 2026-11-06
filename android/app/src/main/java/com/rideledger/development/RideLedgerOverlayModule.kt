@@ -145,5 +145,38 @@ class RideLedgerOverlayModule(private val reactContext: ReactApplicationContext)
             promise.reject("GET_STATUS_ERROR", e.message, e)
         }
     }
+
+    @ReactMethod
+    fun markTodayLogged(dateStr: String, isLogged: Boolean, promise: Promise) {
+        try {
+            CommuteReminderReceiver.markDateLogged(reactContext, dateStr, isLogged)
+            if (isLogged) {
+                CommuteReminderReceiver.dismissNotification(reactContext)
+            }
+            promise.resolve(true)
+        } catch (e: Exception) {
+            promise.reject("MARK_LOGGED_ERROR", e.message, e)
+        }
+    }
+
+    @ReactMethod
+    fun dismissReminderNotification(promise: Promise) {
+        try {
+            CommuteReminderReceiver.dismissNotification(reactContext)
+            promise.resolve(true)
+        } catch (e: Exception) {
+            promise.reject("DISMISS_ERROR", e.message, e)
+        }
+    }
+
+    @ReactMethod
+    fun isTodayLogged(dateStr: String, promise: Promise) {
+        try {
+            val logged = CommuteReminderReceiver.isDateLogged(reactContext, dateStr)
+            promise.resolve(logged)
+        } catch (e: Exception) {
+            promise.reject("CHECK_LOGGED_ERROR", e.message, e)
+        }
+    }
 }
 

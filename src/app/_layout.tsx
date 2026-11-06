@@ -11,10 +11,12 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeConfig } from '@/components/ui/use-theme-config';
-import { initDatabase } from '@/db';
+import { CommutesRepo, initDatabase } from '@/db';
 import { APIProvider } from '@/lib/api';
+import { getTodayDateString } from '@/lib/currency';
 import { loadSelectedTheme } from '@/lib/hooks/use-selected-theme';
 import { setupNotificationChannelsAndCategories } from '@/lib/notifications';
+import { OverlayManager } from '@/lib/overlay';
 // Import global CSS file
 import '../global.css';
 
@@ -52,6 +54,19 @@ export default function RootLayout() {
         router.push(data.route as any);
       }
     });
+
+    // Edge Case EC-A1/A2: If today is already recorded, dismiss lingering check-in notification and sync native flag
+    try {
+      const today = getTodayDateString();
+      const todayCommute = CommutesRepo.getCommuteByDate(today);
+      if (todayCommute) {
+        OverlayManager.dismissReminderNotification().catch(() => {});
+        OverlayManager.markTodayLogged(today, true).catch(() => {});
+      }
+    }
+    catch (e) {
+      console.warn('Error syncing today commute status on launch:', e);
+    }
 
     return () => subscription.remove();
   }, [router]);

@@ -121,4 +121,52 @@ export const OverlayManager = {
       };
     }
   },
+
+  /**
+   * Syncs today's commute status with native Android SharedPreferences and dismisses notification if logged.
+   */
+  async markTodayLogged(dateStr: string, isLogged: boolean): Promise<boolean> {
+    if (Platform.OS !== 'android' || !RideLedgerOverlay?.markTodayLogged) {
+      return false;
+    }
+    try {
+      return await RideLedgerOverlay.markTodayLogged(dateStr, isLogged);
+    }
+    catch (e) {
+      console.warn('Failed to mark today logged natively:', e);
+      return false;
+    }
+  },
+
+  /**
+   * Dismisses any active commute reminder check-in notification.
+   */
+  async dismissReminderNotification(): Promise<boolean> {
+    if (Platform.OS !== 'android' || !RideLedgerOverlay?.dismissReminderNotification) {
+      return false;
+    }
+    try {
+      return await RideLedgerOverlay.dismissReminderNotification();
+    }
+    catch (e) {
+      console.warn('Failed to dismiss reminder notification:', e);
+      return false;
+    }
+  },
+
+  /**
+   * Checks whether the specified date is marked as logged in Android.
+   */
+  async isTodayLogged(dateStr: string): Promise<boolean> {
+    if (Platform.OS !== 'android' || !RideLedgerOverlay?.isTodayLogged) {
+      return false;
+    }
+    try {
+      return await RideLedgerOverlay.isTodayLogged(dateStr);
+    }
+    catch (e) {
+      console.warn('Failed to check if date logged:', e);
+      return false;
+    }
+  },
 };

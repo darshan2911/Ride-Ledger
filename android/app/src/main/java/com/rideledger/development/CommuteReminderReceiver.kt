@@ -8,13 +8,18 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
 import android.os.Build
 import android.os.PowerManager
 import android.provider.Settings
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import java.io.File
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 class CommuteReminderReceiver : BroadcastReceiver() {
 
@@ -24,6 +29,67 @@ class CommuteReminderReceiver : BroadcastReceiver() {
         const val NOTIFICATION_ID = 9001
         const val PREFS_NAME = "RideLedgerPrefs"
         const val TAG = "CommuteReminderReceiver"
+
+        fun getTodayDateString(): String {
+            return SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+        }
+
+        fun isDateLogged(context: Context, dateStr: String): Boolean {
+            val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            val cachedDate = prefs.getString("last_logged_commute_date", null)
+            if (cachedDate == dateStr) {
+                return true
+            }
+
+            // Also check SQLite databases directly for maximum accuracy
+            val dbCandidates = listOf(
+                context.getDatabasePath("rideledger.db"),
+                File(context.filesDir, "SQLite/rideledger.db"),
+                File(context.noBackupFilesDir, "SQLite/rideledger.db")
+            )
+
+            for (dbFile in dbCandidates) {
+                if (dbFile.exists()) {
+                    try {
+                        val db = SQLiteDatabase.openDatabase(dbFile.path, null, SQLiteDatabase.OPEN_READONLY)
+                        val cursor = db.rawQuery("SELECT COUNT(*) FROM commute_days WHERE date = ?", arrayOf(dateStr))
+                        var count = 0
+                        if (cursor.moveToFirst()) {
+                            count = cursor.getInt(0)
+                        }
+                        cursor.close()
+                        db.close()
+                        if (count > 0) {
+                            return true
+                        }
+                    } catch (e: Exception) {
+                        Log.w(TAG, "Error checking db file at ${dbFile.path}: ${e.message}")
+                    }
+                }
+            }
+            return false
+        }
+
+        fun markDateLogged(context: Context, dateStr: String, isLogged: Boolean) {
+            val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            if (isLogged) {
+                prefs.edit().putString("last_logged_commute_date", dateStr).apply()
+            } else {
+                if (prefs.getString("last_logged_commute_date", null) == dateStr) {
+                    prefs.edit().remove("last_logged_commute_date").apply()
+                }
+            }
+        }
+
+        fun dismissNotification(context: Context) {
+            try {
+                val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
+                notificationManager?.cancel(NOTIFICATION_ID)
+                Log.d(TAG, "Dismissed commute reminder notification (ID $NOTIFICATION_ID)")
+            } catch (e: Exception) {
+                Log.w(TAG, "Failed to dismiss notification: ${e.message}")
+            }
+        }
 
         fun scheduleAlarm(context: Context, hour: Int, minute: Int, isTest: Boolean = false, delaySeconds: Int = 0) {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager ?: return
@@ -46,12 +112,16 @@ class CommuteReminderReceiver : BroadcastReceiver() {
             if (isTest && delaySeconds > 0) {
                 triggerTimeMillis = System.currentTimeMillis() + (delaySeconds * 1000L)
             } else {
+                val todayStr = getTodayDateString()
+                val isTodayAlreadyLogged = isDateLogged(context, todayStr)
+
                 val calendar = Calendar.getInstance().apply {
                     set(Calendar.HOUR_OF_DAY, hour)
                     set(Calendar.MINUTE, minute)
                     set(Calendar.SECOND, 0)
                     set(Calendar.MILLISECOND, 0)
-                    if (timeInMillis <= System.currentTimeMillis()) {
+                    // If today's reminder time has passed OR today's commute is already recorded, schedule for tomorrow!
+                    if (timeInMillis <= System.currentTimeMillis() || isTodayAlreadyLogged) {
                         add(Calendar.DAY_OF_YEAR, 1)
                     }
                 }
@@ -90,7 +160,8 @@ class CommuteReminderReceiver : BroadcastReceiver() {
             }
             val pendingIntent = PendingIntent.getBroadcast(context, 9001, intent, flags)
             alarmManager.cancel(pendingIntent)
-            Log.d(TAG, "Cancelled commute alarm")
+            dismissNotification(context)
+            Log.d(TAG, "Cancelled commute alarm and dismissed notification")
         }
     }
 
@@ -113,6 +184,22 @@ class CommuteReminderReceiver : BroadcastReceiver() {
 
         if (ACTION_COMMUTE_REMINDER == action) {
             val isTest = intent.getBooleanExtra("is_test", false)
+
+            // Edge Case EC-A1: If today's commute is ALREADY logged, suppress popup & notification!
+            if (!isTest) {
+                val todayStr = getTodayDateString()
+                if (isDateLogged(context, todayStr)) {
+                    Log.d(TAG, "Commute for today ($todayStr) has already been recorded! Suppressing overlay popup & notification.")
+                    // Reschedule for tomorrow's configured time
+                    val hour = prefs.getInt("reminder_hour", 21)
+                    val minute = prefs.getInt("reminder_minute", 0)
+                    val isEnabled = prefs.getBoolean("reminder_enabled", true)
+                    if (isEnabled) {
+                        scheduleAlarm(context, hour, minute)
+                    }
+                    return
+                }
+            }
 
             // 1. Acquire temporary wake lock to ensure CPU is active
             val powerManager = context.getSystemService(Context.POWER_SERVICE) as? PowerManager
@@ -223,4 +310,5 @@ class CommuteReminderReceiver : BroadcastReceiver() {
         notificationManager.notify(NOTIFICATION_ID, builder.build())
     }
 }
+
 

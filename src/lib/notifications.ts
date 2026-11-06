@@ -64,30 +64,13 @@ export async function requestNotificationPermissions(): Promise<boolean> {
   return finalStatus === 'granted';
 }
 
-export async function scheduleDailyReminder(hour: number, minute: number): Promise<string> {
+export async function scheduleDailyReminder(_hour: number, _minute: number): Promise<string> {
   await setupNotificationChannelsAndCategories();
 
-  // Cancel any existing commute reminder notifications
+  // Cancel any existing expo-scheduled notifications to avoid duplicates with native AlarmManager
   await cancelAllCommuteReminders();
 
-  const id = await Notifications.scheduleNotificationAsync({
-    content: {
-      title: 'How was your commute today? 🚗',
-      body: 'Tap to log your carpool or commute in 5 seconds and keep expenses accurate.',
-      data: { action: 'quick-log', route: '/quick-log' },
-      categoryIdentifier: REMINDER_CATEGORY_ID,
-      sound: true,
-      priority: Notifications.AndroidNotificationPriority.HIGH,
-    },
-    trigger: {
-      type: Notifications.SchedulableTriggerInputTypes.DAILY,
-      hour,
-      minute,
-      channelId: 'commute-reminders',
-    },
-  });
-
-  return id;
+  return 'native-alarm-delegated';
 }
 
 export async function cancelAllCommuteReminders(): Promise<void> {

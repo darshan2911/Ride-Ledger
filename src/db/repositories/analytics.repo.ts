@@ -1,4 +1,5 @@
 import type { CommuteType, DashboardStats, MonthAnalytics } from '../types';
+import { getTodayDateString } from '@/lib/currency';
 import { getDatabase } from '../database';
 import { CommutesRepo } from './commutes.repo';
 import { OwnersRepo } from './owners.repo';
@@ -6,7 +7,7 @@ import { OwnersRepo } from './owners.repo';
 export const AnalyticsRepo = {
   getDashboardStats(): DashboardStats {
     const db = getDatabase();
-    const todayStr = new Date().toISOString().slice(0, 10);
+    const todayStr = getTodayDateString();
     const currentMonthPrefix = todayStr.slice(0, 7); // 'YYYY-MM'
 
     // 1. Today's commute

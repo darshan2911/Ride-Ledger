@@ -7,6 +7,8 @@ import type {
   PaymentStatus,
   TripType,
 } from '../types';
+import { getTodayDateString } from '@/lib/currency';
+import { OverlayManager } from '@/lib/overlay';
 import { getDatabase, recordAuditLog } from '../database';
 
 export type LogCommuteInput = {
@@ -114,18 +116,30 @@ export const CommutesRepo = {
       result = this.getCommuteByDate(input.date)!;
     });
 
+    // Sync with native Android overlay/alarm suppression
+    if (input.date === getTodayDateString()) {
+      OverlayManager.markTodayLogged(input.date, true).catch(() => {});
+      OverlayManager.dismissReminderNotification().catch(() => {});
+    }
+
     return result!;
   },
 
   deleteCommute(id: string) {
     const db = getDatabase();
+    let deletedDate: string | null = null;
     db.withTransactionSync(() => {
       const existing = db.getFirstSync<CommuteDay>('SELECT * FROM commute_days WHERE id = ?', [id]);
       if (existing) {
+        deletedDate = existing.date;
         db.runSync('DELETE FROM commute_days WHERE id = ?', [id]);
         recordAuditLog('commute_days', id, 'delete', existing, null);
       }
     });
+
+    if (deletedDate && deletedDate === getTodayDateString()) {
+      OverlayManager.markTodayLogged(deletedDate, false).catch(() => {});
+    }
   },
 
   getCommuteHistory(filter?: {
@@ -260,7 +274,7 @@ export const CommutesRepo = {
   getUnloggedDates(daysBack = 14): string[] {
     const db = getDatabase();
     const today = new Date();
-    const todayStr = today.toISOString().slice(0, 10);
+    const todayStr = getTodayDateString();
     const unlogged: string[] = [];
 
     // Settings for working days & tracking start date

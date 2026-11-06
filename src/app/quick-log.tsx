@@ -31,6 +31,7 @@ import { Text } from '@/components/ui/text';
 import { CommutesRepo } from '@/db';
 import { formatPaise, getTodayDateString, rupeesToPaise } from '@/lib/currency';
 import { useOwners, useSettings } from '@/lib/hooks/use-rideledger';
+import { OverlayManager } from '@/lib/overlay';
 import { useRideLedgerStore } from '@/lib/rideledger-store';
 
 export default function QuickLogScreen() {
@@ -46,6 +47,7 @@ export default function QuickLogScreen() {
   const [date, setDate] = useState(initialDate);
   const [commuteType, setCommuteType] = useState<CommuteType>('carpool');
   const [tripSelection, setTripSelection] = useState<'both' | 'morning' | 'evening' | 'neither'>('both');
+  const [isExistingRecord, setIsExistingRecord] = useState(false);
 
   // Default owner from settings or first available
   const defaultOwnerId = settings.default_owner_id || (owners.length > 0 ? owners[0].id : null);
@@ -91,6 +93,7 @@ export default function QuickLogScreen() {
   useEffect(() => {
     const existing = CommutesRepo.getCommuteByDate(date);
     if (existing) {
+      setIsExistingRecord(true);
       setCommuteType(existing.commute_type);
       setNotes(existing.notes || '');
 
@@ -118,6 +121,12 @@ export default function QuickLogScreen() {
         setTripSelection('neither');
       }
     }
+    else {
+      setIsExistingRecord(false);
+      setCommuteType('carpool');
+      setTripSelection('both');
+      setNotes('');
+    }
   }, [date]);
 
   // Calculate live total
@@ -138,6 +147,15 @@ export default function QuickLogScreen() {
   }
 
   const handleSave = () => {
+    // Edge Case EC-B1: Future date check
+    if (date > getTodayDateString()) {
+      Alert.alert(
+        'Invalid Date',
+        'Future dates cannot be recorded. Please select today or a past date.',
+      );
+      return;
+    }
+
     if (commuteType === 'carpool' && owners.length === 0) {
       Alert.alert(
         'Add Carpool Driver First',
@@ -146,6 +164,14 @@ export default function QuickLogScreen() {
           { text: 'Cancel', style: 'cancel' },
           { text: 'Add Driver', onPress: () => router.push('/owners/edit') },
         ],
+      );
+      return;
+    }
+
+    if (commuteType === 'carpool' && tripSelection === 'neither') {
+      Alert.alert(
+        'No Trips Selected',
+        'Please select Morning, Evening, or Both for carpool trips, or choose "Leave" / "Own Bike".',
       );
       return;
     }
@@ -178,9 +204,14 @@ export default function QuickLogScreen() {
         notes: notes.trim() || undefined,
       });
 
+      // Edge Case EC-A2: Auto-dismiss reminder notification if logging today
+      if (date === getTodayDateString()) {
+        OverlayManager.dismissReminderNotification().catch(() => {});
+      }
+
       triggerRefresh();
       showMessage({
-        message: 'Commute Logged Successfully! 🚗',
+        message: isExistingRecord ? 'Commute Updated! ✏️' : 'Commute Logged Successfully! 🚗',
         description:
           commuteType === 'carpool'
             ? `Recorded ${formatPaise(calculatedTotalPaise)} for ${date}`
@@ -223,9 +254,18 @@ export default function QuickLogScreen() {
       {/* Top Header */}
       <View className="flex-row items-center justify-between border-b border-neutral-200 bg-white px-5 py-4 dark:border-neutral-800 dark:bg-neutral-900">
         <View>
-          <Text className="text-xl font-bold text-neutral-900 dark:text-white">
-            Log Commute
-          </Text>
+          <View className="flex-row items-center">
+            <Text className="text-xl font-bold text-neutral-900 dark:text-white">
+              {isExistingRecord ? 'Edit Commute' : 'Log Commute'}
+            </Text>
+            {isExistingRecord && (
+              <View className="ml-2.5 rounded-full bg-amber-100 px-2.5 py-0.5 dark:bg-amber-900/40">
+                <Text className="text-[10px] font-bold text-amber-800 uppercase dark:text-amber-300">
+                  Editing
+                </Text>
+              </View>
+            )}
+          </View>
           <Text className="text-xs text-neutral-500 dark:text-neutral-400">
             {date === getTodayDateString() ? 'Today, ' : ''}
             {date}
@@ -240,6 +280,16 @@ export default function QuickLogScreen() {
       </View>
 
       <ScrollView className="flex-1 px-5 py-4" showsVerticalScrollIndicator={false}>
+        {/* Editing Alert Banner if already logged */}
+        {isExistingRecord && (
+          <View className="mb-4 flex-row items-center rounded-2xl border border-amber-200 bg-amber-50 p-3.5 dark:border-amber-900/50 dark:bg-amber-950/30">
+            <View className="mr-2.5 size-2 rounded-full bg-amber-500" />
+            <Text className="flex-1 text-xs font-medium text-amber-900 dark:text-amber-200">
+              This day was already logged. Saving changes will update your records and adjust driver balances accordingly.
+            </Text>
+          </View>
+        )}
+
         {/* Date Selector Row */}
         <View className="mb-5 flex-row items-center justify-between rounded-2xl border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900">
           <View className="flex-row items-center">
@@ -272,7 +322,10 @@ export default function QuickLogScreen() {
               onPress={() => {
                 const y = new Date();
                 y.setDate(y.getDate() - 1);
-                setDate(y.toISOString().slice(0, 10));
+                const yyyy = y.getFullYear();
+                const mm = String(y.getMonth() + 1).padStart(2, '0');
+                const dd = String(y.getDate()).padStart(2, '0');
+                setDate(`${yyyy}-${mm}-${dd}`);
               }}
               className={`rounded-lg px-2.5 py-1 ${
                 date !== getTodayDateString()
@@ -673,7 +726,7 @@ export default function QuickLogScreen() {
         >
           <Check size={20} color="#ffffff" />
           <Text className="ml-2 text-base font-bold text-white">
-            {isSubmitting ? 'Saving...' : 'Save Commute'}
+            {isSubmitting ? 'Saving...' : isExistingRecord ? 'Update Commute' : 'Save Commute'}
           </Text>
         </TouchableOpacity>
       </View>
