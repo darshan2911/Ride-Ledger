@@ -3,12 +3,10 @@ import {
   Archive,
   ArrowLeft,
   CheckCircle2,
-  Clock,
   CreditCard,
   Edit2,
   Moon,
   Phone,
-  RefreshCw,
   Sun,
 } from 'lucide-react-native';
 import * as React from 'react';
@@ -317,7 +315,7 @@ export default function OwnerDetailsScreen() {
                                 <Sun size={16} color="#d97706" />
                               )
                             : (
-                                <Moon size={16} color="#4F46E5" />
+                                <Moon size={16} color="#6366F1" />
                               )}
                         </View>
                         <View className="ml-3">
@@ -367,7 +365,7 @@ export default function OwnerDetailsScreen() {
                           <Sun size={16} color="#d97706" />
                         )
                       : (
-                          <Moon size={16} color="#4F46E5" />
+                          <Moon size={16} color="#6366F1" />
                         )}
                   </View>
                   <View className="ml-3">

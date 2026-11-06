@@ -24,7 +24,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FocusAwareStatusBar } from '@/components/ui/focus-aware-status-bar';
 import { Text } from '@/components/ui/text';
 import { CommutesRepo } from '@/db';
-import { formatDateFriendly, formatPaise, rupeesToPaise } from '@/lib/currency';
+import { formatDateFriendly, rupeesToPaise } from '@/lib/currency';
 import { useOwners, useSettings, useUnloggedDates } from '@/lib/hooks/use-rideledger';
 import { useRideLedgerStore } from '@/lib/rideledger-store';
 
@@ -171,7 +171,7 @@ export default function BulkLogScreen() {
                         onPress={() => toggleDate(d)}
                         className={`flex-row items-center justify-between rounded-xl border p-3 ${
                           isSelected
-                            ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-900/30'
+                            ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-950/60'
                             : 'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'
                         }`}
                       >
@@ -180,7 +180,7 @@ export default function BulkLogScreen() {
                           <Text
                             className={`ml-2 text-sm font-semibold ${
                               isSelected
-                                ? 'text-primary-900 dark:text-primary-200'
+                                ? 'text-primary-950 dark:text-primary-100'
                                 : 'text-neutral-800 dark:text-neutral-200'
                             }`}
                           >
@@ -215,7 +215,7 @@ export default function BulkLogScreen() {
             onPress={() => setCommuteType('carpool')}
             className={`flex-1 items-center rounded-2xl border p-3 ${
               commuteType === 'carpool'
-                ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-900/30'
+                ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-950/60'
                 : 'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'
             }`}
           >
@@ -223,7 +223,7 @@ export default function BulkLogScreen() {
             <Text
               className={`mt-1.5 text-xs font-bold ${
                 commuteType === 'carpool'
-                  ? 'text-primary-900 dark:text-primary-200'
+                  ? 'text-primary-950 dark:text-primary-100'
                   : 'text-neutral-600 dark:text-neutral-300'
               }`}
             >
@@ -235,14 +235,16 @@ export default function BulkLogScreen() {
             onPress={() => setCommuteType('own_vehicle')}
             className={`flex-1 items-center rounded-2xl border p-3 ${
               commuteType === 'own_vehicle'
-                ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/30'
+                ? 'border-blue-600 bg-blue-50 dark:border-blue-500 dark:bg-blue-950/60'
                 : 'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'
             }`}
           >
             <Bike size={20} color={commuteType === 'own_vehicle' ? '#2563eb' : '#71717a'} />
             <Text
               className={`mt-1.5 text-xs font-bold ${
-                commuteType === 'own_vehicle' ? 'text-blue-700' : 'text-neutral-600'
+                commuteType === 'own_vehicle'
+                  ? 'text-blue-950 dark:text-blue-100'
+                  : 'text-neutral-600 dark:text-neutral-300'
               }`}
             >
               Own Bike
@@ -253,14 +255,16 @@ export default function BulkLogScreen() {
             onPress={() => setCommuteType('leave')}
             className={`flex-1 items-center rounded-2xl border p-3 ${
               commuteType === 'leave'
-                ? 'border-neutral-600 bg-neutral-100 dark:bg-neutral-800'
+                ? 'border-neutral-600 bg-neutral-100 dark:border-neutral-600 dark:bg-neutral-800'
                 : 'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'
             }`}
           >
             <Home size={20} color={commuteType === 'leave' ? '#18181b' : '#71717a'} />
             <Text
               className={`mt-1.5 text-xs font-bold ${
-                commuteType === 'leave' ? 'text-neutral-900' : 'text-neutral-600'
+                commuteType === 'leave'
+                  ? 'text-neutral-900 dark:text-white'
+                  : 'text-neutral-600 dark:text-neutral-300'
               }`}
             >
               Leave
@@ -294,14 +298,14 @@ export default function BulkLogScreen() {
                     onPress={() => setOwnerId(owner.id)}
                     className={`rounded-xl border px-3 py-2 ${
                       ownerId === owner.id
-                        ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-900/30'
+                        ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-950/60'
                         : 'border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-800'
                     }`}
                   >
                     <Text
                       className={`text-xs font-bold ${
                         ownerId === owner.id
-                          ? 'text-primary-900 dark:text-primary-200'
+                          ? 'text-primary-950 dark:text-primary-100'
                           : 'text-neutral-700 dark:text-neutral-300'
                       }`}
                     >

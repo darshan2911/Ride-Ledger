@@ -218,7 +218,7 @@ export default function EditOwnerScreen() {
 
           <View className="flex-row items-center justify-between border-t border-neutral-100 pt-3 dark:border-neutral-800">
             <View className="flex-row items-center">
-              <Moon size={18} color="#4F46E5" />
+              <Moon size={18} color="#6366F1" />
               <Text className="ml-2.5 text-sm font-medium text-neutral-800 dark:text-neutral-200">
                 Evening Fare (₹)
               </Text>
@@ -237,7 +237,7 @@ export default function EditOwnerScreen() {
           onPress={() => setIsDefault(prev => !prev)}
           className={`mb-4 flex-row items-center justify-between rounded-2xl border p-4 ${
             isDefault
-              ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-900/30'
+              ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-950/60'
               : 'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'
           }`}
         >
@@ -245,7 +245,7 @@ export default function EditOwnerScreen() {
             <Text
               className={`text-sm font-bold ${
                 isDefault
-                  ? 'text-primary-900 dark:text-primary-200'
+                  ? 'text-primary-950 dark:text-primary-100'
                   : 'text-neutral-900 dark:text-white'
               }`}
             >
@@ -254,7 +254,7 @@ export default function EditOwnerScreen() {
             <Text
               className={`mt-0.5 text-xs ${
                 isDefault
-                  ? 'text-primary-700 dark:text-primary-300/80'
+                  ? 'font-medium text-primary-800 dark:text-primary-200/90'
                   : 'text-neutral-500 dark:text-neutral-400'
               }`}
             >

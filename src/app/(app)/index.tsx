@@ -1,16 +1,11 @@
 import { useRouter } from 'expo-router';
 import {
   AlertCircle,
-  Calendar,
   Car,
-  CheckCircle2,
   ChevronRight,
   CreditCard,
-  Moon,
   Plus,
-  Sun,
   TrendingUp,
-  UserCheck,
   Users,
 } from 'lucide-react-native';
 import * as React from 'react';
@@ -73,7 +68,7 @@ export default function HomeDashboardScreen() {
           onPress={() => router.push('/owners')}
           className="flex-row items-center rounded-xl bg-neutral-100 px-3 py-1.5 dark:bg-neutral-800"
         >
-          <Users size={15} color="#4F46E5" />
+          <Users size={15} color="#FF6C00" />
           <Text className="ml-1.5 text-xs font-bold text-neutral-800 dark:text-neutral-200">
             Owners
           </Text>
@@ -129,8 +124,8 @@ export default function HomeDashboardScreen() {
         <View className="mb-5 rounded-3xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center">
-              <View className="rounded-xl bg-primary-50 p-2 dark:bg-primary-900/30">
-                <Car size={20} color="#4F46E5" />
+              <View className="rounded-xl bg-primary-50 p-2 dark:bg-primary-950/60">
+                <Car size={20} color="#FF6C00" />
               </View>
               <View className="ml-3">
                 <Text className="text-xs font-semibold tracking-wider text-neutral-400 uppercase">
@@ -199,7 +194,7 @@ export default function HomeDashboardScreen() {
               value={formatPaise(stats.month_expense_paise)}
               subtitle={`${stats.month_carpool_days} carpool days`}
               variant="primary"
-              icon={<TrendingUp size={18} color="#4F46E5" />}
+              icon={<TrendingUp size={18} color="#FF6C00" />}
             />
           </View>
         </View>
@@ -246,7 +241,7 @@ export default function HomeDashboardScreen() {
           <View className="gap-3">
             {stats.owners.length === 0 ? (
               <View className="items-center rounded-3xl border border-dashed border-neutral-300 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900">
-                <View className="size-12 items-center justify-center rounded-2xl bg-primary-50 dark:bg-primary-900/30">
+                <View className="size-12 items-center justify-center rounded-2xl bg-primary-50 dark:bg-primary-950/60">
                   <Users size={24} color="#FF6C00" />
                 </View>
                 <Text className="mt-3 text-sm font-bold text-neutral-900 dark:text-white">
@@ -271,8 +266,8 @@ export default function HomeDashboardScreen() {
                   className="flex-row items-center justify-between rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
                 >
                   <View className="flex-1 flex-row items-center">
-                    <View className="size-10 items-center justify-center rounded-xl bg-primary-100 dark:bg-primary-900/40">
-                      <Text className="text-base font-bold text-primary-700 dark:text-primary-300">
+                    <View className="size-10 items-center justify-center rounded-xl bg-primary-100 dark:bg-primary-950/60">
+                      <Text className="text-base font-bold text-primary-700 dark:text-primary-100">
                         {owner.name.charAt(0)}
                       </Text>
                     </View>

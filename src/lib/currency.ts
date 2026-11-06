@@ -40,21 +40,25 @@ export function getTodayDateString(): string {
   return `${yyyy}-${mm}-${dd}`;
 }
 
+export function getYesterdayDateString(): string {
+  const y = new Date();
+  y.setDate(y.getDate() - 1);
+  const yyyy = y.getFullYear();
+  const mm = String(y.getMonth() + 1).padStart(2, '0');
+  const dd = String(y.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
 export function formatDateFriendly(dateStr: string): string {
   const today = getTodayDateString();
   if (dateStr === today)
     return 'Today';
 
-  const d = new Date(`${dateStr}T00:00:00`);
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(
-    yesterday.getDate(),
-  ).padStart(2, '0')}`;
-
-  if (dateStr === yesterdayStr)
+  const yesterday = getYesterdayDateString();
+  if (dateStr === yesterday)
     return 'Yesterday';
 
+  const d = new Date(`${dateStr}T00:00:00`);
   return d.toLocaleDateString('en-IN', {
     day: 'numeric',
     month: 'short',

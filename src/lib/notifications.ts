@@ -27,7 +27,7 @@ export async function setupNotificationChannelsAndCategories(): Promise<void> {
     description: 'Notifications asking to log your daily commute and carpool expenses',
     importance: Notifications.AndroidImportance.HIGH,
     vibrationPattern: [0, 250, 250, 250],
-    lightColor: '#4F46E5',
+    lightColor: '#FF6C00',
     sound: 'default',
     enableVibrate: true,
     showBadge: true,

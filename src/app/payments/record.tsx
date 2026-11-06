@@ -2,7 +2,6 @@ import type { PaymentMethod } from '@/db';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
   Calendar as CalendarIcon,
-  Check,
   CheckSquare,
   CreditCard,
   Square,
@@ -23,6 +22,7 @@ import { showMessage } from 'react-native-flash-message';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FocusAwareStatusBar } from '@/components/ui/focus-aware-status-bar';
+import { selectableCardStyles } from '@/components/ui/selectable-card';
 import { Text } from '@/components/ui/text';
 import { PaymentsRepo } from '@/db';
 import { formatDateFriendly, formatPaise, getTodayDateString, paiseToRupees, rupeesToPaise } from '@/lib/currency';
@@ -39,6 +39,13 @@ export default function RecordPaymentScreen() {
   const [selectedOwnerId, setSelectedOwnerId] = useState<string>(
     params.ownerId || (owners.length > 0 ? owners[0].id : ''),
   );
+
+  useEffect(() => {
+    if (!selectedOwnerId && owners.length > 0) {
+      const defaultOwner = owners.find(o => o.is_default) || owners[0];
+      setSelectedOwnerId(params.ownerId || defaultOwner.id);
+    }
+  }, [owners, params.ownerId, selectedOwnerId]);
 
   const { owner } = useOwner(selectedOwnerId);
   const unpaidTrips = useOwnerTrips(selectedOwnerId, 'unpaid');
@@ -168,7 +175,7 @@ export default function RecordPaymentScreen() {
 
       {owners.length === 0 ? (
         <View className="flex-1 items-center justify-center p-8 text-center">
-          <View className="size-16 items-center justify-center rounded-full bg-primary-50 dark:bg-primary-900/30">
+          <View className="size-16 items-center justify-center rounded-full bg-primary-50 dark:bg-primary-950/60">
             <User size={30} color="#FF6C00" />
           </View>
           <Text className="mt-4 text-lg font-bold text-neutral-900 dark:text-white">
@@ -198,22 +205,20 @@ export default function RecordPaymentScreen() {
                   <TouchableOpacity
                     key={o.id}
                     onPress={() => setSelectedOwnerId(o.id)}
-                    className={`mr-2 flex-row items-center rounded-2xl border px-4 py-3 ${
-                      isSelected
-                        ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-900/30'
-                        : 'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'
-                    }`}
+                    className={`mr-2 flex-row items-center rounded-2xl border px-4 py-3 ${selectableCardStyles.container(
+                      isSelected,
+                    )}`}
                   >
                     <User size={16} color={isSelected ? '#FF6C00' : '#71717a'} />
                     <View className="ml-2.5">
                       <Text
-                        className={`text-sm font-bold ${
-                          isSelected ? 'text-primary-900 dark:text-primary-200' : 'text-neutral-800 dark:text-neutral-200'
-                        }`}
+                        className={`text-sm font-bold ${selectableCardStyles.title(isSelected)}`}
                       >
                         {o.name}
                       </Text>
-                      <Text className="text-xs text-neutral-500">
+                      <Text
+                        className={`text-xs ${selectableCardStyles.subtitle(isSelected)}`}
+                      >
                         Pending:
                         {' '}
                         {formatPaise(o.outstanding_balance_paise)}
@@ -263,16 +268,14 @@ export default function RecordPaymentScreen() {
                     <TouchableOpacity
                       key={method}
                       onPress={() => setPaymentMethod(method)}
-                      className={`flex-1 items-center rounded-xl border py-2.5 ${
-                        paymentMethod === method
-                          ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-900/30'
-                          : 'border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-800'
-                      }`}
+                      className={`flex-1 items-center rounded-xl border py-2.5 ${selectableCardStyles.container(
+                        paymentMethod === method,
+                      )}`}
                     >
                       <Text
-                        className={`text-xs font-bold uppercase ${
-                          paymentMethod === method ? 'text-primary-900 dark:text-primary-200' : 'text-neutral-600 dark:text-neutral-400'
-                        }`}
+                        className={`text-xs font-bold uppercase ${selectableCardStyles.title(
+                          paymentMethod === method,
+                        )}`}
                       >
                         {method.replace('_', ' ')}
                       </Text>
@@ -283,7 +286,7 @@ export default function RecordPaymentScreen() {
 
               <View className="flex-row items-center justify-between border-t border-neutral-100 pt-2 dark:border-neutral-800">
                 <View className="flex-row items-center">
-                  <CalendarIcon size={16} color="#4F46E5" />
+                  <CalendarIcon size={16} color="#FF6C00" />
                   <Text className="ml-2 text-xs font-medium text-neutral-600 dark:text-neutral-400">
                     Payment Date
                   </Text>
@@ -336,11 +339,9 @@ export default function RecordPaymentScreen() {
                           <TouchableOpacity
                             key={t.id}
                             onPress={() => toggleTripSelection(t.id)}
-                            className={`flex-row items-center justify-between rounded-xl border p-3 ${
-                              isSelected
-                                ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-900/30'
-                                : 'border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-800/40'
-                            }`}
+                            className={`flex-row items-center justify-between rounded-xl border p-3 ${selectableCardStyles.container(
+                              isSelected,
+                            )}`}
                           >
                             <View className="flex-row items-center">
                               {isSelected
@@ -351,14 +352,22 @@ export default function RecordPaymentScreen() {
                                     <Square size={18} color="#a1a1aa" />
                                   )}
                               <View className="ml-3">
-                                <Text className="text-xs font-bold text-neutral-800 dark:text-neutral-200">
+                                <Text
+                                  className={`text-xs font-bold ${selectableCardStyles.title(
+                                    isSelected,
+                                  )}`}
+                                >
                                   {formatDateFriendly(t.date)}
                                   {' '}
                                   (
                                   {t.date}
                                   )
                                 </Text>
-                                <Text className="text-[11px] text-neutral-500 capitalize">
+                                <Text
+                                  className={`text-[11px] capitalize ${selectableCardStyles.subtitle(
+                                    isSelected,
+                                  )}`}
+                                >
                                   {t.trip_type}
                                   {' '}
                                   Trip
@@ -367,11 +376,21 @@ export default function RecordPaymentScreen() {
                             </View>
 
                             <View className="items-end">
-                              <Text className="text-sm font-bold text-neutral-900 dark:text-white">
+                              <Text
+                                className={`text-sm font-bold ${selectableCardStyles.amount(
+                                  isSelected,
+                                )} text-neutral-900 dark:text-white`}
+                              >
                                 {formatPaise(t.remaining_paise)}
                               </Text>
                               {t.allocated_paise > 0 && (
-                                <Text className="text-[10px] text-purple-600">
+                                <Text
+                                  className={`text-[10px] font-medium ${
+                                    isSelected
+                                      ? 'text-primary-800 dark:text-primary-200'
+                                      : 'text-purple-600 dark:text-purple-400'
+                                  }`}
+                                >
                                   Paid:
                                   {' '}
                                   {formatPaise(t.allocated_paise)}

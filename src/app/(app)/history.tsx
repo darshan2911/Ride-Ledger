@@ -3,7 +3,6 @@ import { useRouter } from 'expo-router';
 import {
   Calendar,
   Edit2,
-  Filter,
   Moon,
   Search,
   Sun,
@@ -119,13 +118,15 @@ export default function HistoryScreen() {
                 onPress={() => setCommuteType(type)}
                 className={`mr-2 rounded-xl border px-3.5 py-1.5 ${
                   isSelected
-                    ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-900/40'
+                    ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-950/60'
                     : 'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'
                 }`}
               >
                 <Text
-                  className={`text-xs font-semibold capitalize ${
-                    isSelected ? 'text-primary-700 dark:text-primary-300' : 'text-neutral-600 dark:text-neutral-400'
+                  className={`text-xs capitalize ${
+                    isSelected
+                      ? 'font-bold text-primary-950 dark:text-primary-100'
+                      : 'font-medium text-neutral-600 dark:text-neutral-400'
                   }`}
                 >
                   {type === 'own_vehicle' ? 'Own Bike' : type}
@@ -239,7 +240,7 @@ export default function HistoryScreen() {
                       {evening && (
                         <View className="flex-row items-center justify-between">
                           <View className="flex-row items-center">
-                            <Moon size={14} color="#4F46E5" />
+                            <Moon size={14} color="#6366F1" />
                             <Text className="ml-2 text-xs font-medium text-neutral-700 dark:text-neutral-300">
                               Evening:
                               {' '}

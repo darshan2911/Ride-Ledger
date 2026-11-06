@@ -3,7 +3,6 @@ import {
   Archive,
   ArrowLeft,
   ChevronRight,
-  Phone,
   Plus,
   User,
 } from 'lucide-react-native';
@@ -87,7 +86,7 @@ export default function OwnersListScreen() {
         <View className="gap-3">
           {owners.length === 0 ? (
             <View className="items-center justify-center rounded-3xl border border-dashed border-neutral-300 bg-white p-8 text-center dark:border-neutral-800 dark:bg-neutral-900">
-              <View className="size-16 items-center justify-center rounded-full bg-primary-50 dark:bg-primary-900/30">
+              <View className="size-16 items-center justify-center rounded-full bg-primary-50 dark:bg-primary-950/60">
                 <User size={28} color="#FF6C00" />
               </View>
               <Text className="mt-4 text-base font-bold text-neutral-900 dark:text-white">
@@ -112,8 +111,8 @@ export default function OwnersListScreen() {
                 className="flex-row items-center justify-between rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
               >
                 <View className="flex-1 flex-row items-center">
-                  <View className="size-12 items-center justify-center rounded-2xl bg-primary-100 dark:bg-primary-900/40">
-                    <Text className="text-lg font-bold text-primary-700 dark:text-primary-300">
+                  <View className="size-12 items-center justify-center rounded-2xl bg-primary-100 dark:bg-primary-950/60">
+                    <Text className="text-lg font-bold text-primary-700 dark:text-primary-100">
                       {owner.name.charAt(0).toUpperCase()}
                     </Text>
                   </View>

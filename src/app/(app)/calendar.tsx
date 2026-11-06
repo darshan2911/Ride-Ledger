@@ -1,7 +1,5 @@
 import { useRouter } from 'expo-router';
 import {
-  Calendar as CalendarIcon,
-  Car,
   ChevronLeft,
   ChevronRight,
   Moon,
@@ -154,7 +152,7 @@ export default function CalendarScreen() {
                       isSelected
                         ? 'bg-primary-600 shadow-sm'
                         : isToday
-                          ? 'border border-primary-500/60 bg-primary-50/60 dark:bg-primary-900/30'
+                          ? 'border border-primary-500/60 bg-primary-50/60 dark:bg-primary-950/60'
                           : ''
                     }`}
                   >
@@ -250,7 +248,7 @@ export default function CalendarScreen() {
                                   <Sun size={16} color="#d97706" />
                                 )
                               : (
-                                  <Moon size={16} color="#4F46E5" />
+                                  <Moon size={16} color="#6366F1" />
                                 )}
                             <View className="ml-2.5">
                               <Text className="text-xs font-bold text-neutral-800 capitalize dark:text-neutral-200">

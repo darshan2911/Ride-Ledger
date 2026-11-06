@@ -29,7 +29,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FocusAwareStatusBar } from '@/components/ui/focus-aware-status-bar';
 import { Text } from '@/components/ui/text';
 import { CommutesRepo } from '@/db';
-import { formatPaise, getTodayDateString, rupeesToPaise } from '@/lib/currency';
+import { formatDateFriendly, formatPaise, getTodayDateString, getYesterdayDateString, rupeesToPaise } from '@/lib/currency';
 import { useOwners, useSettings } from '@/lib/hooks/use-rideledger';
 import { OverlayManager } from '@/lib/overlay';
 import { useRideLedgerStore } from '@/lib/rideledger-store';
@@ -293,17 +293,17 @@ export default function QuickLogScreen() {
         {/* Date Selector Row */}
         <View className="mb-5 flex-row items-center justify-between rounded-2xl border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900">
           <View className="flex-row items-center">
-            <CalendarIcon size={18} color="#4F46E5" />
+            <CalendarIcon size={18} color="#FF6C00" />
             <Text className="ml-2 font-medium text-neutral-700 dark:text-neutral-300">
               Date:
             </Text>
           </View>
-          <View className="flex-row items-center gap-2">
+          <View className="flex-row flex-wrap items-center justify-end gap-1.5">
             <TouchableOpacity
               onPress={() => setDate(getTodayDateString())}
               className={`rounded-lg px-2.5 py-1 ${
                 date === getTodayDateString()
-                  ? 'bg-primary-600'
+                  ? 'bg-primary-600 dark:bg-primary-500'
                   : 'bg-neutral-100 dark:bg-neutral-800'
               }`}
             >
@@ -319,23 +319,16 @@ export default function QuickLogScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={() => {
-                const y = new Date();
-                y.setDate(y.getDate() - 1);
-                const yyyy = y.getFullYear();
-                const mm = String(y.getMonth() + 1).padStart(2, '0');
-                const dd = String(y.getDate()).padStart(2, '0');
-                setDate(`${yyyy}-${mm}-${dd}`);
-              }}
+              onPress={() => setDate(getYesterdayDateString())}
               className={`rounded-lg px-2.5 py-1 ${
-                date !== getTodayDateString()
-                  ? 'bg-primary-600'
+                date === getYesterdayDateString()
+                  ? 'bg-primary-600 dark:bg-primary-500'
                   : 'bg-neutral-100 dark:bg-neutral-800'
               }`}
             >
               <Text
                 className={`text-xs font-semibold ${
-                  date !== getTodayDateString()
+                  date === getYesterdayDateString()
                     ? 'text-white'
                     : 'text-neutral-600 dark:text-neutral-300'
                 }`}
@@ -343,6 +336,14 @@ export default function QuickLogScreen() {
                 Yesterday
               </Text>
             </TouchableOpacity>
+
+            {date !== getTodayDateString() && date !== getYesterdayDateString() && (
+              <View className="rounded-lg bg-primary-600 px-2.5 py-1 dark:bg-primary-500">
+                <Text className="text-xs font-bold text-white">
+                  {formatDateFriendly(date)}
+                </Text>
+              </View>
+            )}
           </View>
         </View>
 
@@ -357,13 +358,13 @@ export default function QuickLogScreen() {
             onPress={() => setCommuteType('carpool')}
             className={`min-w-[45%] flex-1 flex-row items-center rounded-2xl border p-3.5 ${
               commuteType === 'carpool'
-                ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-900/30'
+                ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-950/60'
                 : 'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'
             }`}
           >
             <View
               className={`rounded-xl p-2 ${
-                commuteType === 'carpool' ? 'bg-primary-600' : 'bg-neutral-100 dark:bg-neutral-800'
+                commuteType === 'carpool' ? 'bg-primary-600 dark:bg-primary-500' : 'bg-neutral-100 dark:bg-neutral-800'
               }`}
             >
               <Car size={18} color={commuteType === 'carpool' ? '#ffffff' : '#71717a'} />
@@ -372,7 +373,7 @@ export default function QuickLogScreen() {
               <Text
                 className={`font-bold ${
                   commuteType === 'carpool'
-                    ? 'text-primary-900 dark:text-primary-200'
+                    ? 'text-primary-950 dark:text-primary-100'
                     : 'text-neutral-800 dark:text-neutral-200'
                 }`}
               >
@@ -381,7 +382,7 @@ export default function QuickLogScreen() {
               <Text
                 className={`text-xs ${
                   commuteType === 'carpool'
-                    ? 'text-primary-700 dark:text-primary-300/80'
+                    ? 'font-medium text-primary-800 dark:text-primary-200/90'
                     : 'text-neutral-500 dark:text-neutral-400'
                 }`}
               >
@@ -395,20 +396,20 @@ export default function QuickLogScreen() {
             onPress={() => setCommuteType('own_vehicle')}
             className={`min-w-[45%] flex-1 flex-row items-center rounded-2xl border p-3.5 ${
               commuteType === 'own_vehicle'
-                ? 'border-blue-600 bg-blue-50 dark:border-blue-500 dark:bg-blue-950/30'
+                ? 'border-blue-600 bg-blue-50 dark:border-blue-500 dark:bg-blue-950/60'
                 : 'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'
             }`}
           >
             <View
               className={`rounded-xl p-2 ${
-                commuteType === 'own_vehicle' ? 'bg-blue-600' : 'bg-neutral-100 dark:bg-neutral-800'
+                commuteType === 'own_vehicle' ? 'bg-blue-600 dark:bg-blue-500' : 'bg-neutral-100 dark:bg-neutral-800'
               }`}
             >
               <Bike size={18} color={commuteType === 'own_vehicle' ? '#ffffff' : '#71717a'} />
             </View>
             <View className="ml-3">
               <Text
-                className={`font-semibold ${
+                className={`font-bold ${
                   commuteType === 'own_vehicle'
                     ? 'text-blue-950 dark:text-blue-100'
                     : 'text-neutral-800 dark:text-neutral-200'
@@ -416,7 +417,15 @@ export default function QuickLogScreen() {
               >
                 Own Bike
               </Text>
-              <Text className="text-xs text-neutral-500">₹0 expense</Text>
+              <Text
+                className={`text-xs ${
+                  commuteType === 'own_vehicle'
+                    ? 'font-medium text-blue-800 dark:text-blue-200/90'
+                    : 'text-neutral-500 dark:text-neutral-400'
+                }`}
+              >
+                ₹0 expense
+              </Text>
             </View>
           </TouchableOpacity>
 
@@ -431,14 +440,14 @@ export default function QuickLogScreen() {
           >
             <View
               className={`rounded-xl p-2 ${
-                commuteType === 'leave' ? 'bg-neutral-600' : 'bg-neutral-100 dark:bg-neutral-800'
+                commuteType === 'leave' ? 'bg-neutral-700 dark:bg-neutral-600' : 'bg-neutral-100 dark:bg-neutral-800'
               }`}
             >
               <Home size={18} color={commuteType === 'leave' ? '#ffffff' : '#71717a'} />
             </View>
             <View className="ml-3">
               <Text
-                className={`font-semibold ${
+                className={`font-bold ${
                   commuteType === 'leave'
                     ? 'text-neutral-900 dark:text-white'
                     : 'text-neutral-800 dark:text-neutral-200'
@@ -446,7 +455,15 @@ export default function QuickLogScreen() {
               >
                 Leave / Off
               </Text>
-              <Text className="text-xs text-neutral-500">No commute</Text>
+              <Text
+                className={`text-xs ${
+                  commuteType === 'leave'
+                    ? 'font-medium text-neutral-700 dark:text-neutral-300'
+                    : 'text-neutral-500 dark:text-neutral-400'
+                }`}
+              >
+                No commute
+              </Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -556,21 +573,21 @@ export default function QuickLogScreen() {
                           onPress={() => setMorningOwnerId(owner.id)}
                           className={`flex-row items-center rounded-xl border px-3 py-2 ${
                             isSelected
-                              ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-900/30'
+                              ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-950/60'
                               : 'border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-800/60'
                           }`}
                         >
-                          <User size={13} color={isSelected ? '#4F46E5' : '#71717a'} />
+                          <User size={13} color={isSelected ? '#FF6C00' : '#71717a'} />
                           <Text
                             className={`ml-1.5 text-xs font-semibold ${
                               isSelected
-                                ? 'text-primary-700 dark:text-primary-300'
+                                ? 'text-primary-950 dark:text-primary-100'
                                 : 'text-neutral-700 dark:text-neutral-300'
                             }`}
                           >
                             {owner.name}
                           </Text>
-                          {isSelected && <Check size={12} color="#4F46E5" className="ml-1" />}
+                          {isSelected && <Check size={12} color="#FF6C00" className="ml-1" />}
                         </TouchableOpacity>
                       );
                     })}
@@ -600,7 +617,7 @@ export default function QuickLogScreen() {
                 <View className="flex-row items-center justify-between">
                   <View className="flex-row items-center">
                     <View className="rounded-lg bg-indigo-50 p-1.5 dark:bg-indigo-950/40">
-                      <Moon size={16} color="#4F46E5" />
+                      <Moon size={16} color="#6366F1" />
                     </View>
                     <Text className="ml-2 font-bold text-neutral-800 dark:text-neutral-200">
                       Evening Trip
@@ -638,21 +655,21 @@ export default function QuickLogScreen() {
                           onPress={() => setEveningOwnerId(owner.id)}
                           className={`flex-row items-center rounded-xl border px-3 py-2 ${
                             isSelected
-                              ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-900/30'
+                              ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-950/60'
                               : 'border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-800/60'
                           }`}
                         >
-                          <User size={13} color={isSelected ? '#4F46E5' : '#71717a'} />
+                          <User size={13} color={isSelected ? '#FF6C00' : '#71717a'} />
                           <Text
                             className={`ml-1.5 text-xs font-semibold ${
                               isSelected
-                                ? 'text-primary-700 dark:text-primary-300'
+                                ? 'text-primary-950 dark:text-primary-100'
                                 : 'text-neutral-700 dark:text-neutral-300'
                             }`}
                           >
                             {owner.name}
                           </Text>
-                          {isSelected && <Check size={12} color="#4F46E5" className="ml-1" />}
+                          {isSelected && <Check size={12} color="#FF6C00" className="ml-1" />}
                         </TouchableOpacity>
                       );
                     })}

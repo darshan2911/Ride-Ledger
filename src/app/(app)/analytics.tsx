@@ -1,14 +1,11 @@
-import { useRouter } from 'expo-router';
 import {
   Award,
   BarChart3,
   ChevronLeft,
   ChevronRight,
   Moon,
-  PieChart,
   Sun,
   TrendingUp,
-  Users,
 } from 'lucide-react-native';
 import * as React from 'react';
 import { useState } from 'react';
@@ -95,7 +92,7 @@ export default function AnalyticsScreen() {
               value={formatPaise(analytics.total_carpool_expense_paise)}
               subtitle={`${analytics.carpool_days} carpool days`}
               variant="primary"
-              icon={<TrendingUp size={18} color="#4F46E5" />}
+              icon={<TrendingUp size={18} color="#FF6C00" />}
             />
           </View>
 
@@ -157,7 +154,7 @@ export default function AnalyticsScreen() {
           <View className="flex-row items-center justify-between border-t border-neutral-100 pt-2 dark:border-neutral-800">
             <View className="flex-row items-center">
               <View className="rounded-lg bg-indigo-50 p-2 dark:bg-indigo-950/40">
-                <Moon size={18} color="#4F46E5" />
+                <Moon size={18} color="#6366F1" />
               </View>
               <View className="ml-3">
                 <Text className="text-xs font-bold text-neutral-800 dark:text-neutral-200">
@@ -181,9 +178,9 @@ export default function AnalyticsScreen() {
               )
             </Text>
             {analytics.most_frequent_owner_name && (
-              <View className="flex-row items-center rounded-lg bg-primary-50 px-2 py-0.5 dark:bg-primary-900/30">
+              <View className="flex-row items-center rounded-lg bg-primary-50 px-2 py-0.5 dark:bg-primary-950/60">
                 <Award size={13} color="#FF6C00" />
-                <Text className="ml-1 text-[11px] font-bold text-primary-700 dark:text-primary-300">
+                <Text className="ml-1 text-[11px] font-bold text-primary-950 dark:text-primary-100">
                   Top:
                   {' '}
                   {analytics.most_frequent_owner_name}
