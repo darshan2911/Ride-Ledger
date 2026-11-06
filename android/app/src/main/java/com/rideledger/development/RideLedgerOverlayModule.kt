@@ -146,3 +146,4 @@ class RideLedgerOverlayModule(private val reactContext: ReactApplicationContext)
         }
     }
 }
+

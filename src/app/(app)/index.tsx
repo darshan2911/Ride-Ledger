@@ -15,6 +15,7 @@ import {
 } from 'lucide-react-native';
 import * as React from 'react';
 import {
+  Image,
   RefreshControl,
   ScrollView,
   TouchableOpacity,
@@ -52,13 +53,20 @@ export default function HomeDashboardScreen() {
 
       {/* Top App Bar */}
       <View className="flex-row items-center justify-between border-b border-neutral-200 bg-white px-5 py-4 dark:border-neutral-800 dark:bg-neutral-900">
-        <View>
-          <Text className="text-2xl font-black tracking-tight text-neutral-900 dark:text-white">
-            RideLedger
-          </Text>
-          <Text className="text-xs text-neutral-500">
-            Personal Commute & Carpool Tracker
-          </Text>
+        <View className="flex-row items-center">
+          <Image
+            source={require('../../../assets/logo.png')}
+            className="mr-3 size-11 rounded-2xl"
+            resizeMode="cover"
+          />
+          <View>
+            <Text className="text-2xl font-black tracking-tight text-neutral-900 dark:text-white">
+              RideLedger
+            </Text>
+            <Text className="text-xs text-neutral-500">
+              Personal Commute & Carpool Tracker
+            </Text>
+          </View>
         </View>
 
         <TouchableOpacity

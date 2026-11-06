@@ -12,7 +12,7 @@ const EXPO_ACCOUNT_OWNER = 'obytes';
 const EAS_PROJECT_ID = 'c3e1075b-6fe7-4686-aa49-35b46a229044';
 
 const appIconBadgeConfig: AppIconBadgeConfig = {
-  enabled: Env.EXPO_PUBLIC_APP_ENV !== 'production',
+  enabled: false,
   badges: [
     {
       text: Env.EXPO_PUBLIC_APP_ENV,
@@ -56,7 +56,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   android: {
     adaptiveIcon: {
       foregroundImage: './assets/adaptive-icon.png',
-      backgroundColor: '#2E3C4B',
+      backgroundColor: '#060B21',
     },
     package: Env.EXPO_PUBLIC_PACKAGE,
     permissions: [
@@ -77,9 +77,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       'expo-splash-screen',
       {
-        backgroundColor: '#2E3C4B',
+        backgroundColor: '#060B21',
         image: './assets/splash-icon.png',
-        imageWidth: 150,
+        imageWidth: 160,
       },
     ],
     [

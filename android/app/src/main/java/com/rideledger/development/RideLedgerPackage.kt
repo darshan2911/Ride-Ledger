@@ -14,3 +14,4 @@ class RideLedgerPackage : ReactPackage {
         return emptyList()
     }
 }
+
