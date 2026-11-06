@@ -1,77 +1,95 @@
-import { Link, Redirect, SplashScreen, Tabs } from 'expo-router';
+import { Tabs } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+import {
+  BarChart3,
+  Calendar,
+  Clock,
+  Home,
+  Settings,
+} from 'lucide-react-native';
 import * as React from 'react';
 import { useCallback, useEffect } from 'react';
 
-import { Pressable, Text } from '@/components/ui';
-import {
-  Feed as FeedIcon,
-  Settings as SettingsIcon,
-  Style as StyleIcon,
-} from '@/components/ui/icons';
-import { useAuthStore as useAuth } from '@/features/auth/use-auth-store';
-import { useIsFirstTime } from '@/lib/hooks/use-is-first-time';
-
 export default function TabLayout() {
-  const status = useAuth.use.status();
-  const [isFirstTime] = useIsFirstTime();
   const hideSplash = useCallback(async () => {
-    await SplashScreen.hideAsync();
-  }, []);
-  useEffect(() => {
-    if (status !== 'idle') {
-      const timer = setTimeout(() => {
-        hideSplash();
-      }, 1000);
-      return () => clearTimeout(timer);
+    try {
+      await SplashScreen.hideAsync();
     }
-  }, [hideSplash, status]);
+    catch {}
+  }, []);
 
-  if (isFirstTime) {
-    return <Redirect href="/onboarding" />;
-  }
-  if (status === 'signOut') {
-    return <Redirect href="/login" />;
-  }
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      hideSplash();
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [hideSplash]);
+
   return (
-    <Tabs>
+    <Tabs
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: '#4F46E5',
+        tabBarInactiveTintColor: '#a1a1aa',
+        tabBarStyle: {
+          borderTopColor: '#f4f4f5',
+          height: 60,
+          paddingBottom: 8,
+          paddingTop: 8,
+        },
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: '600',
+        },
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Feed',
-          tabBarIcon: ({ color }) => <FeedIcon color={color} />,
-          headerRight: () => <CreateNewPostLink />,
-          tabBarButtonTestID: 'feed-tab',
+          title: 'Home',
+          tabBarIcon: ({ color, size }) => <Home size={size || 20} color={color} />,
         }}
       />
 
       <Tabs.Screen
-        name="style"
+        name="history"
         options={{
-          title: 'Style',
-          headerShown: false,
-          tabBarIcon: ({ color }) => <StyleIcon color={color} />,
-          tabBarButtonTestID: 'style-tab',
+          title: 'History',
+          tabBarIcon: ({ color, size }) => <Clock size={size || 20} color={color} />,
         }}
       />
+
+      <Tabs.Screen
+        name="calendar"
+        options={{
+          title: 'Calendar',
+          tabBarIcon: ({ color, size }) => <Calendar size={size || 20} color={color} />,
+        }}
+      />
+
+      <Tabs.Screen
+        name="analytics"
+        options={{
+          title: 'Analytics',
+          tabBarIcon: ({ color, size }) => <BarChart3 size={size || 20} color={color} />,
+        }}
+      />
+
       <Tabs.Screen
         name="settings"
         options={{
           title: 'Settings',
-          headerShown: false,
-          tabBarIcon: ({ color }) => <SettingsIcon color={color} />,
-          tabBarButtonTestID: 'settings-tab',
+          tabBarIcon: ({ color, size }) => <Settings size={size || 20} color={color} />,
+        }}
+      />
+
+      {/* Hide style demo tab from tab bar */}
+      <Tabs.Screen
+        name="style"
+        options={{
+          href: null,
         }}
       />
     </Tabs>
-  );
-}
-
-function CreateNewPostLink() {
-  return (
-    <Link href="/feed/add-post" asChild>
-      <Pressable>
-        <Text className="px-3 text-primary-300">Create</Text>
-      </Pressable>
-    </Link>
   );
 }

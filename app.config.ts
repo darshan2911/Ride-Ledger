@@ -59,6 +59,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       backgroundColor: '#2E3C4B',
     },
     package: Env.EXPO_PUBLIC_PACKAGE,
+    permissions: [
+      'android.permission.RECEIVE_BOOT_COMPLETED',
+      'android.permission.POST_NOTIFICATIONS',
+      'android.permission.SCHEDULE_EXACT_ALARM',
+      'android.permission.VIBRATE',
+    ],
   },
   web: {
     favicon: './assets/favicon.png',
@@ -115,6 +121,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-router',
     ['app-icon-badge', appIconBadgeConfig],
     ['react-native-edge-to-edge'],
+    [
+      'expo-notifications',
+      {
+        icon: './assets/icon.png',
+        color: '#4F46E5',
+      },
+    ],
   ],
   extra: {
     eas: {
