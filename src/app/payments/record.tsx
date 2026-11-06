@@ -168,8 +168,8 @@ export default function RecordPaymentScreen() {
 
       {owners.length === 0 ? (
         <View className="flex-1 items-center justify-center p-8 text-center">
-          <View className="dark:bg-primary-950/40 size-16 items-center justify-center rounded-full bg-primary-50">
-            <User size={30} color="#4F46E5" />
+          <View className="size-16 items-center justify-center rounded-full bg-primary-50 dark:bg-primary-900/30">
+            <User size={30} color="#FF6C00" />
           </View>
           <Text className="mt-4 text-lg font-bold text-neutral-900 dark:text-white">
             No Carpool Owners Found
@@ -200,15 +200,15 @@ export default function RecordPaymentScreen() {
                     onPress={() => setSelectedOwnerId(o.id)}
                     className={`mr-2 flex-row items-center rounded-2xl border px-4 py-3 ${
                       isSelected
-                        ? 'dark:bg-primary-950/30 border-primary-600 bg-primary-50 dark:border-primary-500'
+                        ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-900/30'
                         : 'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'
                     }`}
                   >
-                    <User size={16} color={isSelected ? '#4F46E5' : '#71717a'} />
+                    <User size={16} color={isSelected ? '#FF6C00' : '#71717a'} />
                     <View className="ml-2.5">
                       <Text
                         className={`text-sm font-bold ${
-                          isSelected ? 'text-primary-900 dark:text-primary-100' : 'text-neutral-800 dark:text-neutral-200'
+                          isSelected ? 'text-primary-900 dark:text-primary-200' : 'text-neutral-800 dark:text-neutral-200'
                         }`}
                       >
                         {o.name}
@@ -265,13 +265,13 @@ export default function RecordPaymentScreen() {
                       onPress={() => setPaymentMethod(method)}
                       className={`flex-1 items-center rounded-xl border py-2.5 ${
                         paymentMethod === method
-                          ? 'dark:bg-primary-950/30 border-primary-600 bg-primary-50'
+                          ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-900/30'
                           : 'border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-800'
                       }`}
                     >
                       <Text
                         className={`text-xs font-bold uppercase ${
-                          paymentMethod === method ? 'text-primary-700' : 'text-neutral-600'
+                          paymentMethod === method ? 'text-primary-900 dark:text-primary-200' : 'text-neutral-600 dark:text-neutral-400'
                         }`}
                       >
                         {method.replace('_', ' ')}
@@ -338,14 +338,14 @@ export default function RecordPaymentScreen() {
                             onPress={() => toggleTripSelection(t.id)}
                             className={`flex-row items-center justify-between rounded-xl border p-3 ${
                               isSelected
-                                ? 'dark:bg-primary-950/30 border-primary-600 bg-primary-50 dark:border-primary-500'
+                                ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-900/30'
                                 : 'border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-800/40'
                             }`}
                           >
                             <View className="flex-row items-center">
                               {isSelected
                                 ? (
-                                    <CheckSquare size={18} color="#4F46E5" />
+                                    <CheckSquare size={18} color="#FF6C00" />
                                   )
                                 : (
                                     <Square size={18} color="#a1a1aa" />

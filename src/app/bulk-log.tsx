@@ -171,16 +171,16 @@ export default function BulkLogScreen() {
                         onPress={() => toggleDate(d)}
                         className={`flex-row items-center justify-between rounded-xl border p-3 ${
                           isSelected
-                            ? 'dark:bg-primary-950/30 border-primary-600 bg-primary-50 dark:border-primary-500'
+                            ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-900/30'
                             : 'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'
                         }`}
                       >
                         <View className="flex-row items-center">
-                          <CalendarIcon size={16} color={isSelected ? '#4F46E5' : '#71717a'} />
+                          <CalendarIcon size={16} color={isSelected ? '#FF6C00' : '#71717a'} />
                           <Text
                             className={`ml-2 text-sm font-semibold ${
                               isSelected
-                                ? 'text-primary-900 dark:text-primary-100'
+                                ? 'text-primary-900 dark:text-primary-200'
                                 : 'text-neutral-800 dark:text-neutral-200'
                             }`}
                           >
@@ -193,7 +193,7 @@ export default function BulkLogScreen() {
                         </View>
                         {isSelected
                           ? (
-                              <CheckSquare size={18} color="#4F46E5" />
+                              <CheckSquare size={18} color="#FF6C00" />
                             )
                           : (
                               <Square size={18} color="#a1a1aa" />
@@ -215,14 +215,16 @@ export default function BulkLogScreen() {
             onPress={() => setCommuteType('carpool')}
             className={`flex-1 items-center rounded-2xl border p-3 ${
               commuteType === 'carpool'
-                ? 'dark:bg-primary-950/30 border-primary-600 bg-primary-50'
+                ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-900/30'
                 : 'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'
             }`}
           >
-            <Car size={20} color={commuteType === 'carpool' ? '#4F46E5' : '#71717a'} />
+            <Car size={20} color={commuteType === 'carpool' ? '#FF6C00' : '#71717a'} />
             <Text
               className={`mt-1.5 text-xs font-bold ${
-                commuteType === 'carpool' ? 'text-primary-700' : 'text-neutral-600'
+                commuteType === 'carpool'
+                  ? 'text-primary-900 dark:text-primary-200'
+                  : 'text-neutral-600 dark:text-neutral-300'
               }`}
             >
               Carpool
@@ -292,13 +294,15 @@ export default function BulkLogScreen() {
                     onPress={() => setOwnerId(owner.id)}
                     className={`rounded-xl border px-3 py-2 ${
                       ownerId === owner.id
-                        ? 'dark:bg-primary-950/30 border-primary-600 bg-primary-50'
+                        ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-900/30'
                         : 'border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-800'
                     }`}
                   >
                     <Text
                       className={`text-xs font-bold ${
-                        ownerId === owner.id ? 'text-primary-700' : 'text-neutral-700'
+                        ownerId === owner.id
+                          ? 'text-primary-900 dark:text-primary-200'
+                          : 'text-neutral-700 dark:text-neutral-300'
                       }`}
                     >
                       {owner.name}

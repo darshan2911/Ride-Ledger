@@ -181,8 +181,8 @@ export default function AnalyticsScreen() {
               )
             </Text>
             {analytics.most_frequent_owner_name && (
-              <View className="dark:bg-primary-950/40 flex-row items-center rounded-lg bg-primary-50 px-2 py-0.5">
-                <Award size={13} color="#4F46E5" />
+              <View className="flex-row items-center rounded-lg bg-primary-50 px-2 py-0.5 dark:bg-primary-900/30">
+                <Award size={13} color="#FF6C00" />
                 <Text className="ml-1 text-[11px] font-bold text-primary-700 dark:text-primary-300">
                   Top:
                   {' '}

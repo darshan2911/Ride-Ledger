@@ -237,25 +237,35 @@ export default function EditOwnerScreen() {
           onPress={() => setIsDefault(prev => !prev)}
           className={`mb-4 flex-row items-center justify-between rounded-2xl border p-4 ${
             isDefault
-              ? 'dark:bg-primary-950/30 border-primary-600 bg-primary-50 dark:border-primary-500'
+              ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-900/30'
               : 'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'
           }`}
         >
-          <View>
+          <View className="mr-3 flex-1">
             <Text
               className={`text-sm font-bold ${
-                isDefault ? 'text-primary-900 dark:text-primary-100' : 'text-neutral-900 dark:text-white'
+                isDefault
+                  ? 'text-primary-900 dark:text-primary-200'
+                  : 'text-neutral-900 dark:text-white'
               }`}
             >
               Primary / Default Carpool Driver
             </Text>
-            <Text className="mt-0.5 text-xs text-neutral-500">
+            <Text
+              className={`mt-0.5 text-xs ${
+                isDefault
+                  ? 'text-primary-700 dark:text-primary-300/80'
+                  : 'text-neutral-500 dark:text-neutral-400'
+              }`}
+            >
               Auto-selected when opening quick commute logger
             </Text>
           </View>
           <View
-            className={`size-6 items-center justify-center rounded-md border ${
-              isDefault ? 'border-primary-600 bg-primary-600' : 'border-neutral-300'
+            className={`size-6 shrink-0 items-center justify-center rounded-md border ${
+              isDefault
+                ? 'border-primary-600 bg-primary-600 dark:border-primary-500 dark:bg-primary-500'
+                : 'border-neutral-300 bg-transparent dark:border-neutral-700'
             }`}
           >
             {isDefault && <Check size={14} color="#ffffff" />}

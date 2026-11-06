@@ -129,7 +129,7 @@ export default function HomeDashboardScreen() {
         <View className="mb-5 rounded-3xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center">
-              <View className="dark:bg-primary-950/40 rounded-xl bg-primary-50 p-2">
+              <View className="rounded-xl bg-primary-50 p-2 dark:bg-primary-900/30">
                 <Car size={20} color="#4F46E5" />
               </View>
               <View className="ml-3">
@@ -246,8 +246,8 @@ export default function HomeDashboardScreen() {
           <View className="gap-3">
             {stats.owners.length === 0 ? (
               <View className="items-center rounded-3xl border border-dashed border-neutral-300 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900">
-                <View className="dark:bg-primary-950/40 size-12 items-center justify-center rounded-2xl bg-primary-50">
-                  <Users size={24} color="#4F46E5" />
+                <View className="size-12 items-center justify-center rounded-2xl bg-primary-50 dark:bg-primary-900/30">
+                  <Users size={24} color="#FF6C00" />
                 </View>
                 <Text className="mt-3 text-sm font-bold text-neutral-900 dark:text-white">
                   No Carpool Owners Added
@@ -271,7 +271,7 @@ export default function HomeDashboardScreen() {
                   className="flex-row items-center justify-between rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
                 >
                   <View className="flex-1 flex-row items-center">
-                    <View className="dark:bg-primary-950/60 size-10 items-center justify-center rounded-xl bg-primary-100">
+                    <View className="size-10 items-center justify-center rounded-xl bg-primary-100 dark:bg-primary-900/40">
                       <Text className="text-base font-bold text-primary-700 dark:text-primary-300">
                         {owner.name.charAt(0)}
                       </Text>
