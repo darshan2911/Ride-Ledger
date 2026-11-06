@@ -114,7 +114,7 @@ If you carpool to work and pay drivers on a weekly or bi-weekly cycle, tracking 
 
 3. **Start the Metro development server**:
    ```bash
-   pnpm start --port 8082
+   pnpm start
    ```
 
 4. **Run on Android**:
@@ -123,8 +123,24 @@ If you carpool to work and pay drivers on a weekly or bi-weekly cycle, tracking 
    adb devices
 
    # Build and install debug APK
-   pnpm expo run:android --port 8082
+   pnpm expo run:android
    ```
+
+### Standalone Release APK (Direct Install)
+
+To build and install a self-contained release APK that works offline and without Metro:
+
+```bash
+# Build release APK
+cd android && ./gradlew assembleRelease -x lint -x lintVitalAnalyzeRelease -x lintVitalRelease
+
+# Install directly on your connected Android phone
+adb install -r ./RideLedger-release.apk
+```
+
+The compiled release APK is located at:
+- `RideLedger-release.apk` (Project Root)
+- `android/app/build/outputs/apk/release/app-release.apk`
 
 ---
 
