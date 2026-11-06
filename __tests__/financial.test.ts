@@ -84,5 +84,54 @@ describe('Financial Utilities & Math', () => {
     const remainingTrip2 = trips[1].fare_paise - 4000;
     expect(remainingTrip2).toBe(2000); // ₹20 remaining
   });
+
+  test('Unlogged dates calculation respects tracking_start_date (no false missed alerts on fresh install)', () => {
+    const today = new Date('2026-11-06T12:00:00Z'); // Friday
+    const todayStr = '2026-11-06';
+    const trackingStartDate = todayStr; // Installed today
+    const workingDays = [1, 2, 3, 4, 5];
+    const loggedDates = new Set<string>();
+
+    const unlogged: string[] = [];
+    for (let i = 1; i <= 14; i++) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().slice(0, 10);
+
+      if (dateStr < trackingStartDate) continue;
+
+      const dayOfWeek = d.getDay() === 0 ? 7 : d.getDay();
+      if (workingDays.includes(dayOfWeek) && !loggedDates.has(dateStr)) {
+        unlogged.push(dateStr);
+      }
+    }
+
+    // On fresh install, 0 unlogged dates before trackingStartDate!
+    expect(unlogged).toEqual([]);
+  });
+
+  test('Unlogged dates detects actual missed working days after tracking_start_date', () => {
+    const today = new Date('2026-11-09T12:00:00Z'); // Monday
+    const trackingStartDate = '2026-11-06'; // Started Friday
+    const workingDays = [1, 2, 3, 4, 5];
+    const loggedDates = new Set<string>(); // User forgot to log Friday Nov 6
+
+    const unlogged: string[] = [];
+    for (let i = 1; i <= 7; i++) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().slice(0, 10);
+
+      if (dateStr < trackingStartDate) continue;
+
+      const dayOfWeek = d.getDay() === 0 ? 7 : d.getDay();
+      if (workingDays.includes(dayOfWeek) && !loggedDates.has(dateStr)) {
+        unlogged.push(dateStr);
+      }
+    }
+
+    // Friday Nov 6 should be detected as a missed commute!
+    expect(unlogged).toEqual(['2026-11-06']);
+  });
 });
 

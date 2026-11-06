@@ -11,6 +11,7 @@ import {
   View,
 } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { FocusAwareStatusBar } from '@/components/ui/focus-aware-status-bar';
 import { Text } from '@/components/ui/text';
@@ -21,6 +22,7 @@ import { useRideLedgerStore } from '@/lib/rideledger-store';
 
 export default function EditOwnerScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ id?: string }>();
   const isEditing = Boolean(params.id);
 
@@ -114,6 +116,7 @@ export default function EditOwnerScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      style={{ paddingTop: insets.top }}
       className="flex-1 bg-neutral-50 dark:bg-neutral-950"
     >
       <FocusAwareStatusBar />

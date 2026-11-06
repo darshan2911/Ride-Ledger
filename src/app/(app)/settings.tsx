@@ -14,6 +14,7 @@ import {
   RotateCcw,
   Send,
   Sparkles,
+  Trash2,
   Upload,
   Users,
 } from 'lucide-react-native';
@@ -33,7 +34,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { FocusAwareStatusBar } from '@/components/ui/focus-aware-status-bar';
 import { Text } from '@/components/ui/text';
-import { BackupRepo, CommutesRepo } from '@/db';
+import { BackupRepo, CommutesRepo, resetToFactoryCleanSlate } from '@/db';
 import { useSettings } from '@/lib/hooks/use-rideledger';
 import { useSelectedTheme } from '@/lib/hooks/use-selected-theme';
 import {
@@ -303,14 +304,37 @@ export default function SettingsScreen() {
       [
         { text: 'Cancel', style: 'cancel' },
         {
-          text: 'Reset to Clean Slate',
+          text: 'Reset Trips & Balances',
           style: 'destructive',
           onPress: () => {
             CommutesRepo.clearAllCommutesAndPayments();
             triggerRefresh();
             showMessage({
-              message: 'Database Reset to Clean Slate! ✨',
-              description: 'All test trips and payments have been removed. Ready for your real commute!',
+              message: 'Commute History Cleared! ✨',
+              description: 'All trips and payments removed. Your added drivers are preserved.',
+              type: 'success',
+            });
+          },
+        },
+      ],
+    );
+  };
+
+  const handleFactoryReset = () => {
+    Alert.alert(
+      'Factory Reset RideLedger?',
+      'This will permanently delete all carpool drivers, trips, payments, and history, resetting the app to a completely pristine, fresh-install state. This action cannot be undone. Are you sure?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Wipe Everything',
+          style: 'destructive',
+          onPress: () => {
+            resetToFactoryCleanSlate();
+            triggerRefresh();
+            showMessage({
+              message: 'App Wiped to Clean Slate! ✨',
+              description: 'All data cleared. RideLedger is in a brand-new, fresh state.',
               type: 'success',
             });
           },
@@ -574,25 +598,44 @@ export default function SettingsScreen() {
         {/* Database Clean Slate / Reset Section */}
         <View className="mb-5 rounded-3xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
           <Text className="mb-3 text-xs font-semibold tracking-wider text-neutral-400 uppercase">
-            Reset Commute History
+            Data Management & Resets
           </Text>
 
-          <TouchableOpacity
-            onPress={handleResetCleanSlate}
-            className="flex-row items-center justify-between rounded-2xl border border-red-200 bg-red-50/50 p-3.5 active:bg-red-100/60 dark:border-red-900/40 dark:bg-red-950/20"
-          >
-            <View className="flex-row items-center">
-              <RotateCcw size={18} color="#ef4444" />
-              <View className="ml-3">
-                <Text className="text-xs font-bold text-red-600 dark:text-red-400">
-                  Reset to Clean Slate (Ready to Use)
-                </Text>
-                <Text className="text-[11px] text-neutral-500 dark:text-neutral-400">
-                  Clears all logged trips & resets balances to ₹0
-                </Text>
+          <View className="gap-2.5">
+            <TouchableOpacity
+              onPress={handleResetCleanSlate}
+              className="flex-row items-center justify-between rounded-2xl border border-amber-200 bg-amber-50/50 p-3.5 active:bg-amber-100/60 dark:border-amber-900/40 dark:bg-amber-950/20"
+            >
+              <View className="flex-row items-center">
+                <RotateCcw size={18} color="#d97706" />
+                <View className="ml-3">
+                  <Text className="text-xs font-bold text-amber-700 dark:text-amber-400">
+                    Reset Commute History
+                  </Text>
+                  <Text className="text-[11px] text-neutral-500 dark:text-neutral-400">
+                    Clears all logged trips & payments (preserves drivers)
+                  </Text>
+                </View>
               </View>
-            </View>
-          </TouchableOpacity>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={handleFactoryReset}
+              className="flex-row items-center justify-between rounded-2xl border border-red-200 bg-red-50/50 p-3.5 active:bg-red-100/60 dark:border-red-900/40 dark:bg-red-950/20"
+            >
+              <View className="flex-row items-center">
+                <Trash2 size={18} color="#ef4444" />
+                <View className="ml-3">
+                  <Text className="text-xs font-bold text-red-600 dark:text-red-400">
+                    Factory Reset (Wipe All Data)
+                  </Text>
+                  <Text className="text-[11px] text-neutral-500 dark:text-neutral-400">
+                    Permanently clears all drivers, trips & starts fresh
+                  </Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Theme Preference */}

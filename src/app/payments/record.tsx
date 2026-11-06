@@ -156,236 +156,258 @@ export default function RecordPaymentScreen() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView className="flex-1 px-5 py-4" showsVerticalScrollIndicator={false}>
-        {/* Carpool Owner Selector */}
-        <Text className="mb-2 text-xs font-semibold tracking-wider text-neutral-500 uppercase">
-          Carpool Owner
-        </Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-5 flex-row">
-          {owners.map((o) => {
-            const isSelected = selectedOwnerId === o.id;
-            return (
-              <TouchableOpacity
-                key={o.id}
-                onPress={() => setSelectedOwnerId(o.id)}
-                className={`mr-2 flex-row items-center rounded-2xl border px-4 py-3 ${
-                  isSelected
-                    ? 'dark:bg-primary-950/30 border-primary-600 bg-primary-50 dark:border-primary-500'
-                    : 'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'
-                }`}
-              >
-                <User size={16} color={isSelected ? '#4F46E5' : '#71717a'} />
-                <View className="ml-2.5">
-                  <Text
-                    className={`text-sm font-bold ${
-                      isSelected ? 'text-primary-900 dark:text-primary-100' : 'text-neutral-800 dark:text-neutral-200'
+      {owners.length === 0 ? (
+        <View className="flex-1 items-center justify-center p-8 text-center">
+          <View className="dark:bg-primary-950/40 size-16 items-center justify-center rounded-full bg-primary-50">
+            <User size={30} color="#4F46E5" />
+          </View>
+          <Text className="mt-4 text-lg font-bold text-neutral-900 dark:text-white">
+            No Carpool Owners Found
+          </Text>
+          <Text className="mt-1.5 max-w-[280px] text-center text-xs text-neutral-500">
+            You haven’t added any carpool drivers yet. Add your driver first to record carpool trips and settlements.
+          </Text>
+          <TouchableOpacity
+            onPress={() => router.replace('/owners/edit')}
+            className="mt-6 flex-row items-center rounded-2xl bg-primary-600 px-6 py-3.5 shadow-sm active:bg-primary-700"
+          >
+            <Text className="text-sm font-bold text-white">+ Add Carpool Owner</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <>
+          <ScrollView className="flex-1 px-5 py-4" showsVerticalScrollIndicator={false}>
+            {/* Carpool Owner Selector */}
+            <Text className="mb-2 text-xs font-semibold tracking-wider text-neutral-500 uppercase">
+              Carpool Owner
+            </Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-5 flex-row">
+              {owners.map((o) => {
+                const isSelected = selectedOwnerId === o.id;
+                return (
+                  <TouchableOpacity
+                    key={o.id}
+                    onPress={() => setSelectedOwnerId(o.id)}
+                    className={`mr-2 flex-row items-center rounded-2xl border px-4 py-3 ${
+                      isSelected
+                        ? 'dark:bg-primary-950/30 border-primary-600 bg-primary-50 dark:border-primary-500'
+                        : 'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'
                     }`}
                   >
-                    {o.name}
-                  </Text>
-                  <Text className="text-xs text-neutral-500">
-                    Pending:
-                    {' '}
-                    {formatPaise(o.outstanding_balance_paise)}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
-
-        {/* Amount Input Card */}
-        <View className="mb-5 rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-          <Text className="text-xs font-medium text-neutral-500">Amount Paid (₹)</Text>
-          <View className="mt-2 flex-row items-center border-b border-neutral-200 pb-2 dark:border-neutral-700">
-            <Text className="mr-2 text-3xl font-extrabold text-neutral-900 dark:text-white">
-              ₹
-            </Text>
-            <TextInput
-              value={amountStr}
-              onChangeText={setAmountStr}
-              keyboardType="numeric"
-              placeholder="0"
-              placeholderTextColor="#a1a1aa"
-              className="flex-1 text-3xl font-extrabold text-neutral-900 dark:text-white"
-            />
-          </View>
-          <View className="mt-3 flex-row items-center justify-between">
-            <Text className="text-xs text-neutral-500">
-              Total Outstanding:
-              {' '}
-              {formatPaise(owner?.outstanding_balance_paise || 0)}
-            </Text>
-            <TouchableOpacity
-              onPress={() => setAmountStr(String(paiseToRupees(owner?.outstanding_balance_paise || 0)))}
-            >
-              <Text className="text-xs font-bold text-primary-600">Pay Full Amount</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Payment Method & Date */}
-        <View className="mb-5 gap-4 rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
-          <View>
-            <Text className="mb-2 text-xs font-medium text-neutral-500">Payment Method</Text>
-            <View className="flex-row gap-2">
-              {(['upi', 'cash', 'bank_transfer'] as PaymentMethod[]).map(method => (
-                <TouchableOpacity
-                  key={method}
-                  onPress={() => setPaymentMethod(method)}
-                  className={`flex-1 items-center rounded-xl border py-2.5 ${
-                    paymentMethod === method
-                      ? 'dark:bg-primary-950/30 border-primary-600 bg-primary-50'
-                      : 'border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-800'
-                  }`}
-                >
-                  <Text
-                    className={`text-xs font-bold uppercase ${
-                      paymentMethod === method ? 'text-primary-700' : 'text-neutral-600'
-                    }`}
-                  >
-                    {method.replace('_', ' ')}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-
-          <View className="flex-row items-center justify-between border-t border-neutral-100 pt-2 dark:border-neutral-800">
-            <View className="flex-row items-center">
-              <CalendarIcon size={16} color="#4F46E5" />
-              <Text className="ml-2 text-xs font-medium text-neutral-600 dark:text-neutral-400">
-                Payment Date
-              </Text>
-            </View>
-            <TextInput
-              value={paymentDate}
-              onChangeText={setPaymentDate}
-              className="rounded-lg border border-neutral-200 px-3 py-1 text-xs font-semibold text-neutral-900 dark:border-neutral-700 dark:text-white"
-            />
-          </View>
-        </View>
-
-        {/* Outstanding Trips Allocation List */}
-        <View className="mb-5 rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
-          <View className="mb-3 flex-row items-center justify-between">
-            <Text className="text-sm font-bold text-neutral-900 dark:text-white">
-              Allocate to Trips (
-              {selectedTripIds.length}
-              /
-              {candidateTrips.length}
-              )
-            </Text>
-            <View className="flex-row items-center gap-2">
-              <TouchableOpacity onPress={handleSelectAll}>
-                <Text className="text-xs font-semibold text-primary-600">Select All</Text>
-              </TouchableOpacity>
-              <Text className="text-xs text-neutral-400">|</Text>
-              <TouchableOpacity onPress={handleClearSelection}>
-                <Text className="text-xs font-semibold text-neutral-500">Clear</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          {candidateTrips.length === 0
-            ? (
-                <View className="items-center py-4">
-                  <Text className="text-sm text-neutral-500">
-                    No unpaid trips found for
-                    {' '}
-                    {owner?.name}
-                    .
-                  </Text>
-                </View>
-              )
-            : (
-                <View className="gap-2">
-                  {candidateTrips.map((t) => {
-                    const isSelected = selectedTripIds.includes(t.id);
-                    return (
-                      <TouchableOpacity
-                        key={t.id}
-                        onPress={() => toggleTripSelection(t.id)}
-                        className={`flex-row items-center justify-between rounded-xl border p-3 ${
-                          isSelected
-                            ? 'dark:bg-primary-950/30 border-primary-600 bg-primary-50 dark:border-primary-500'
-                            : 'border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-800/40'
+                    <User size={16} color={isSelected ? '#4F46E5' : '#71717a'} />
+                    <View className="ml-2.5">
+                      <Text
+                        className={`text-sm font-bold ${
+                          isSelected ? 'text-primary-900 dark:text-primary-100' : 'text-neutral-800 dark:text-neutral-200'
                         }`}
                       >
-                        <View className="flex-row items-center">
-                          {isSelected
-                            ? (
-                                <CheckSquare size={18} color="#4F46E5" />
-                              )
-                            : (
-                                <Square size={18} color="#a1a1aa" />
-                              )}
-                          <View className="ml-3">
-                            <Text className="text-xs font-bold text-neutral-800 dark:text-neutral-200">
-                              {formatDateFriendly(t.date)}
-                              {' '}
-                              (
-                              {t.date}
-                              )
-                            </Text>
-                            <Text className="text-[11px] text-neutral-500 capitalize">
-                              {t.trip_type}
-                              {' '}
-                              Trip
-                            </Text>
-                          </View>
-                        </View>
+                        {o.name}
+                      </Text>
+                      <Text className="text-xs text-neutral-500">
+                        Pending:
+                        {' '}
+                        {formatPaise(o.outstanding_balance_paise)}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
 
-                        <View className="items-end">
-                          <Text className="text-sm font-bold text-neutral-900 dark:text-white">
-                            {formatPaise(t.remaining_paise)}
-                          </Text>
-                          {t.allocated_paise > 0 && (
-                            <Text className="text-[10px] text-purple-600">
-                              Paid:
-                              {' '}
-                              {formatPaise(t.allocated_paise)}
-                            </Text>
-                          )}
-                        </View>
-                      </TouchableOpacity>
-                    );
-                  })}
+            {/* Amount Input Card */}
+            <View className="mb-5 rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+              <Text className="text-xs font-medium text-neutral-500">Amount Paid (₹)</Text>
+              <View className="mt-2 flex-row items-center border-b border-neutral-200 pb-2 dark:border-neutral-700">
+                <Text className="mr-2 text-3xl font-extrabold text-neutral-900 dark:text-white">
+                  ₹
+                </Text>
+                <TextInput
+                  value={amountStr}
+                  onChangeText={setAmountStr}
+                  keyboardType="numeric"
+                  placeholder="0"
+                  placeholderTextColor="#a1a1aa"
+                  className="flex-1 text-3xl font-extrabold text-neutral-900 dark:text-white"
+                />
+              </View>
+              <View className="mt-3 flex-row items-center justify-between">
+                <Text className="text-xs text-neutral-500">
+                  Total Outstanding:
+                  {' '}
+                  {formatPaise(owner?.outstanding_balance_paise || 0)}
+                </Text>
+                <TouchableOpacity
+                  onPress={() => setAmountStr(String(paiseToRupees(owner?.outstanding_balance_paise || 0)))}
+                >
+                  <Text className="text-xs font-bold text-primary-600">Pay Full Amount</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* Payment Method & Date */}
+            <View className="mb-5 gap-4 rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
+              <View>
+                <Text className="mb-2 text-xs font-medium text-neutral-500">Payment Method</Text>
+                <View className="flex-row gap-2">
+                  {(['upi', 'cash', 'bank_transfer'] as PaymentMethod[]).map(method => (
+                    <TouchableOpacity
+                      key={method}
+                      onPress={() => setPaymentMethod(method)}
+                      className={`flex-1 items-center rounded-xl border py-2.5 ${
+                        paymentMethod === method
+                          ? 'dark:bg-primary-950/30 border-primary-600 bg-primary-50'
+                          : 'border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-800'
+                      }`}
+                    >
+                      <Text
+                        className={`text-xs font-bold uppercase ${
+                          paymentMethod === method ? 'text-primary-700' : 'text-neutral-600'
+                        }`}
+                      >
+                        {method.replace('_', ' ')}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
                 </View>
-              )}
-        </View>
+              </View>
 
-        {/* Notes */}
-        <View className="mb-6">
-          <Text className="mb-1 text-xs font-medium text-neutral-500">Payment Notes (Optional)</Text>
-          <TextInput
-            value={notes}
-            onChangeText={setNotes}
-            placeholder="e.g. Paid via Google Pay / UPI Ref ID"
-            placeholderTextColor="#a1a1aa"
-            className="rounded-2xl border border-neutral-200 bg-white p-3.5 text-sm dark:border-neutral-800 dark:bg-neutral-900 dark:text-white"
-          />
-        </View>
+              <View className="flex-row items-center justify-between border-t border-neutral-100 pt-2 dark:border-neutral-800">
+                <View className="flex-row items-center">
+                  <CalendarIcon size={16} color="#4F46E5" />
+                  <Text className="ml-2 text-xs font-medium text-neutral-600 dark:text-neutral-400">
+                    Payment Date
+                  </Text>
+                </View>
+                <TextInput
+                  value={paymentDate}
+                  onChangeText={setPaymentDate}
+                  className="rounded-lg border border-neutral-200 px-3 py-1 text-xs font-semibold text-neutral-900 dark:border-neutral-700 dark:text-white"
+                />
+              </View>
+            </View>
 
-        <View className="h-24" />
-      </ScrollView>
+            {/* Outstanding Trips Allocation List */}
+            <View className="mb-5 rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
+              <View className="mb-3 flex-row items-center justify-between">
+                <Text className="text-sm font-bold text-neutral-900 dark:text-white">
+                  Allocate to Trips (
+                  {selectedTripIds.length}
+                  /
+                  {candidateTrips.length}
+                  )
+                </Text>
+                <View className="flex-row items-center gap-2">
+                  <TouchableOpacity onPress={handleSelectAll}>
+                    <Text className="text-xs font-semibold text-primary-600">Select All</Text>
+                  </TouchableOpacity>
+                  <Text className="text-xs text-neutral-400">|</Text>
+                  <TouchableOpacity onPress={handleClearSelection}>
+                    <Text className="text-xs font-semibold text-neutral-500">Clear</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
 
-      {/* Submit Button */}
-      <View
-        style={{ paddingBottom: Math.max(20, insets.bottom + 12) }}
-        className="border-t border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900"
-      >
-        <TouchableOpacity
-          onPress={handleConfirmPayment}
-          disabled={isSubmitting}
-          className="flex-row items-center justify-center rounded-2xl bg-emerald-600 py-4 shadow-md active:bg-emerald-700"
-        >
-          <CreditCard size={20} color="#ffffff" />
-          <Text className="ml-2 text-base font-bold text-white">
-            {isSubmitting ? 'Recording...' : `Confirm Payment of ${formatPaise(rupeesToPaise(amountStr))}`}
-          </Text>
-        </TouchableOpacity>
-      </View>
+              {candidateTrips.length === 0
+                ? (
+                    <View className="items-center py-4">
+                      <Text className="text-sm text-neutral-500">
+                        No unpaid trips found for
+                        {' '}
+                        {owner?.name}
+                        .
+                      </Text>
+                    </View>
+                  )
+                : (
+                    <View className="gap-2">
+                      {candidateTrips.map((t) => {
+                        const isSelected = selectedTripIds.includes(t.id);
+                        return (
+                          <TouchableOpacity
+                            key={t.id}
+                            onPress={() => toggleTripSelection(t.id)}
+                            className={`flex-row items-center justify-between rounded-xl border p-3 ${
+                              isSelected
+                                ? 'dark:bg-primary-950/30 border-primary-600 bg-primary-50 dark:border-primary-500'
+                                : 'border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-800/40'
+                            }`}
+                          >
+                            <View className="flex-row items-center">
+                              {isSelected
+                                ? (
+                                    <CheckSquare size={18} color="#4F46E5" />
+                                  )
+                                : (
+                                    <Square size={18} color="#a1a1aa" />
+                                  )}
+                              <View className="ml-3">
+                                <Text className="text-xs font-bold text-neutral-800 dark:text-neutral-200">
+                                  {formatDateFriendly(t.date)}
+                                  {' '}
+                                  (
+                                  {t.date}
+                                  )
+                                </Text>
+                                <Text className="text-[11px] text-neutral-500 capitalize">
+                                  {t.trip_type}
+                                  {' '}
+                                  Trip
+                                </Text>
+                              </View>
+                            </View>
+
+                            <View className="items-end">
+                              <Text className="text-sm font-bold text-neutral-900 dark:text-white">
+                                {formatPaise(t.remaining_paise)}
+                              </Text>
+                              {t.allocated_paise > 0 && (
+                                <Text className="text-[10px] text-purple-600">
+                                  Paid:
+                                  {' '}
+                                  {formatPaise(t.allocated_paise)}
+                                </Text>
+                              )}
+                            </View>
+                          </TouchableOpacity>
+                        );
+                      })}
+                    </View>
+                  )}
+            </View>
+
+            {/* Notes */}
+            <View className="mb-6">
+              <Text className="mb-1 text-xs font-medium text-neutral-500">Payment Notes (Optional)</Text>
+              <TextInput
+                value={notes}
+                onChangeText={setNotes}
+                placeholder="e.g. Paid via Google Pay / UPI Ref ID"
+                placeholderTextColor="#a1a1aa"
+                className="rounded-2xl border border-neutral-200 bg-white p-3.5 text-sm dark:border-neutral-800 dark:bg-neutral-900 dark:text-white"
+              />
+            </View>
+
+            <View className="h-24" />
+          </ScrollView>
+
+          {/* Submit Button */}
+          <View
+            style={{ paddingBottom: Math.max(20, insets.bottom + 12) }}
+            className="border-t border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900"
+          >
+            <TouchableOpacity
+              onPress={handleConfirmPayment}
+              disabled={isSubmitting}
+              className="flex-row items-center justify-center rounded-2xl bg-emerald-600 py-4 shadow-md active:bg-emerald-700"
+            >
+              <CreditCard size={20} color="#ffffff" />
+              <Text className="ml-2 text-base font-bold text-white">
+                {isSubmitting ? 'Recording...' : `Confirm Payment of ${formatPaise(rupeesToPaise(amountStr))}`}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </>
+      )}
     </KeyboardAvoidingView>
   );
 }

@@ -15,6 +15,7 @@ import {
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -59,6 +60,15 @@ export default function QuickLogScreen() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Sync default fares when owner changes
+  useEffect(() => {
+    if (!morningOwnerId && owners.length > 0) {
+      setMorningOwnerId(settings.default_owner_id || owners[0].id);
+    }
+    if (!eveningOwnerId && owners.length > 0) {
+      setEveningOwnerId(settings.default_owner_id || owners[0].id);
+    }
+  }, [owners, settings.default_owner_id, morningOwnerId, eveningOwnerId]);
+
   useEffect(() => {
     if (morningOwnerId) {
       const owner = owners.find(o => o.id === morningOwnerId);
@@ -128,6 +138,18 @@ export default function QuickLogScreen() {
   }
 
   const handleSave = () => {
+    if (commuteType === 'carpool' && owners.length === 0) {
+      Alert.alert(
+        'Add Carpool Driver First',
+        'To track carpool trips and financial settlements, please add at least one driver or choose "Own Bike" or "Leave".',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Add Driver', onPress: () => router.push('/owners/edit') },
+        ],
+      );
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const tripsToRecord: { trip_type: TripType; owner_id?: string | null; fare_paise: number }[] = [];
@@ -448,34 +470,51 @@ export default function QuickLogScreen() {
                 <Text className="mt-3 mb-1.5 text-xs font-medium text-neutral-500">
                   Carpool Owner
                 </Text>
-                <View className="flex-row flex-wrap gap-2">
-                  {owners.map((owner) => {
-                    const isSelected = morningOwnerId === owner.id;
-                    return (
-                      <TouchableOpacity
-                        key={owner.id}
-                        onPress={() => setMorningOwnerId(owner.id)}
-                        className={`flex-row items-center rounded-xl border px-3 py-2 ${
-                          isSelected
-                            ? 'dark:bg-primary-950/30 border-primary-600 bg-primary-50 dark:border-primary-500'
-                            : 'border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-800/60'
-                        }`}
-                      >
-                        <User size={13} color={isSelected ? '#4F46E5' : '#71717a'} />
-                        <Text
-                          className={`ml-1.5 text-xs font-semibold ${
+                {owners.length === 0 ? (
+                  <View className="mb-2 rounded-xl border border-dashed border-amber-300 bg-amber-50/70 p-3 dark:border-amber-800/60 dark:bg-amber-950/20">
+                    <Text className="text-xs font-bold text-amber-900 dark:text-amber-200">
+                      No carpool drivers added yet
+                    </Text>
+                    <Text className="mt-0.5 text-[11px] text-amber-800/80 dark:text-amber-300/80">
+                      Add your driver to track rides and calculate balances.
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => router.push('/owners/edit')}
+                      className="mt-2.5 self-start rounded-lg bg-amber-600 px-3 py-1.5 active:bg-amber-700"
+                    >
+                      <Text className="text-xs font-bold text-white">+ Add Driver</Text>
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  <View className="flex-row flex-wrap gap-2">
+                    {owners.map((owner) => {
+                      const isSelected = morningOwnerId === owner.id;
+                      return (
+                        <TouchableOpacity
+                          key={owner.id}
+                          onPress={() => setMorningOwnerId(owner.id)}
+                          className={`flex-row items-center rounded-xl border px-3 py-2 ${
                             isSelected
-                              ? 'text-primary-700 dark:text-primary-300'
-                              : 'text-neutral-700 dark:text-neutral-300'
+                              ? 'dark:bg-primary-950/30 border-primary-600 bg-primary-50 dark:border-primary-500'
+                              : 'border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-800/60'
                           }`}
                         >
-                          {owner.name}
-                        </Text>
-                        {isSelected && <Check size={12} color="#4F46E5" className="ml-1" />}
-                      </TouchableOpacity>
-                    );
-                  })}
-                </View>
+                          <User size={13} color={isSelected ? '#4F46E5' : '#71717a'} />
+                          <Text
+                            className={`ml-1.5 text-xs font-semibold ${
+                              isSelected
+                                ? 'text-primary-700 dark:text-primary-300'
+                                : 'text-neutral-700 dark:text-neutral-300'
+                            }`}
+                          >
+                            {owner.name}
+                          </Text>
+                          {isSelected && <Check size={12} color="#4F46E5" className="ml-1" />}
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
+                )}
 
                 {/* Fare Input for Morning */}
                 <View className="mt-3 flex-row items-center justify-between">
@@ -513,34 +552,51 @@ export default function QuickLogScreen() {
                 <Text className="mt-3 mb-1.5 text-xs font-medium text-neutral-500">
                   Carpool Owner
                 </Text>
-                <View className="flex-row flex-wrap gap-2">
-                  {owners.map((owner) => {
-                    const isSelected = eveningOwnerId === owner.id;
-                    return (
-                      <TouchableOpacity
-                        key={owner.id}
-                        onPress={() => setEveningOwnerId(owner.id)}
-                        className={`flex-row items-center rounded-xl border px-3 py-2 ${
-                          isSelected
-                            ? 'dark:bg-primary-950/30 border-primary-600 bg-primary-50 dark:border-primary-500'
-                            : 'border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-800/60'
-                        }`}
-                      >
-                        <User size={13} color={isSelected ? '#4F46E5' : '#71717a'} />
-                        <Text
-                          className={`ml-1.5 text-xs font-semibold ${
+                {owners.length === 0 ? (
+                  <View className="mb-2 rounded-xl border border-dashed border-amber-300 bg-amber-50/70 p-3 dark:border-amber-800/60 dark:bg-amber-950/20">
+                    <Text className="text-xs font-bold text-amber-900 dark:text-amber-200">
+                      No carpool drivers added yet
+                    </Text>
+                    <Text className="mt-0.5 text-[11px] text-amber-800/80 dark:text-amber-300/80">
+                      Add your driver to track rides and calculate balances.
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => router.push('/owners/edit')}
+                      className="mt-2.5 self-start rounded-lg bg-amber-600 px-3 py-1.5 active:bg-amber-700"
+                    >
+                      <Text className="text-xs font-bold text-white">+ Add Driver</Text>
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  <View className="flex-row flex-wrap gap-2">
+                    {owners.map((owner) => {
+                      const isSelected = eveningOwnerId === owner.id;
+                      return (
+                        <TouchableOpacity
+                          key={owner.id}
+                          onPress={() => setEveningOwnerId(owner.id)}
+                          className={`flex-row items-center rounded-xl border px-3 py-2 ${
                             isSelected
-                              ? 'text-primary-700 dark:text-primary-300'
-                              : 'text-neutral-700 dark:text-neutral-300'
+                              ? 'dark:bg-primary-950/30 border-primary-600 bg-primary-50 dark:border-primary-500'
+                              : 'border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-800/60'
                           }`}
                         >
-                          {owner.name}
-                        </Text>
-                        {isSelected && <Check size={12} color="#4F46E5" className="ml-1" />}
-                      </TouchableOpacity>
-                    );
-                  })}
-                </View>
+                          <User size={13} color={isSelected ? '#4F46E5' : '#71717a'} />
+                          <Text
+                            className={`ml-1.5 text-xs font-semibold ${
+                              isSelected
+                                ? 'text-primary-700 dark:text-primary-300'
+                                : 'text-neutral-700 dark:text-neutral-300'
+                            }`}
+                          >
+                            {owner.name}
+                          </Text>
+                          {isSelected && <Check size={12} color="#4F46E5" className="ml-1" />}
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
+                )}
 
                 {/* Fare Input for Evening */}
                 <View className="mt-3 flex-row items-center justify-between">

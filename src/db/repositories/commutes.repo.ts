@@ -260,25 +260,32 @@ export const CommutesRepo = {
   getUnloggedDates(daysBack = 14): string[] {
     const db = getDatabase();
     const today = new Date();
+    const todayStr = today.toISOString().slice(0, 10);
     const unlogged: string[] = [];
 
-    // Settings for working days
-    const settings = db.getFirstSync<{ working_days: string }>(
-      'SELECT working_days FROM app_settings WHERE id = "default"',
+    // Settings for working days & tracking start date
+    const settings = db.getFirstSync<{ working_days: string; tracking_start_date?: string | null }>(
+      'SELECT working_days, tracking_start_date FROM app_settings WHERE id = "default"',
     );
     const workingDays = (settings?.working_days || '1,2,3,4,5').split(',').map(Number);
+    const trackingStartDate = settings?.tracking_start_date || todayStr;
 
     for (let i = 1; i <= daysBack; i++) {
       const d = new Date(today);
       d.setDate(d.getDate() - i);
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      const dateStr = `${yyyy}-${mm}-${dd}`;
+
+      // A day before the user started tracking is NOT a missed day!
+      if (dateStr < trackingStartDate) {
+        continue;
+      }
+
       const dayOfWeek = d.getDay() === 0 ? 7 : d.getDay(); // 1=Mon, 7=Sun
 
       if (workingDays.includes(dayOfWeek)) {
-        const yyyy = d.getFullYear();
-        const mm = String(d.getMonth() + 1).padStart(2, '0');
-        const dd = String(d.getDate()).padStart(2, '0');
-        const dateStr = `${yyyy}-${mm}-${dd}`;
-
         const exists = db.getFirstSync<{ id: string }>('SELECT id FROM commute_days WHERE date = ?', [dateStr]);
         if (!exists) {
           unlogged.push(dateStr);

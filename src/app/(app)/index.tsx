@@ -215,7 +215,14 @@ export default function HomeDashboardScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => router.push('/payments/record')}
+            onPress={() => {
+              if (stats.owners.length === 0) {
+                router.push('/owners/edit');
+              }
+              else {
+                router.push('/payments/record');
+              }
+            }}
             className="flex-1 flex-row items-center justify-center rounded-2xl bg-emerald-600 py-3.5 shadow-sm active:bg-emerald-700"
           >
             <CreditCard size={18} color="#ffffff" />
@@ -229,54 +236,77 @@ export default function HomeDashboardScreen() {
             <Text className="text-xs font-semibold tracking-wider text-neutral-500 uppercase">
               Carpool Owner Balances
             </Text>
-            <TouchableOpacity onPress={() => router.push('/owners')}>
-              <Text className="text-xs font-bold text-primary-600">View All</Text>
-            </TouchableOpacity>
+            {stats.owners.length > 0 && (
+              <TouchableOpacity onPress={() => router.push('/owners')}>
+                <Text className="text-xs font-bold text-primary-600">View All</Text>
+              </TouchableOpacity>
+            )}
           </View>
 
           <View className="gap-3">
-            {stats.owners.map(owner => (
-              <TouchableOpacity
-                key={owner.id}
-                onPress={() => router.push(`/owners/${owner.id}`)}
-                className="flex-row items-center justify-between rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
-              >
-                <View className="flex-1 flex-row items-center">
-                  <View className="dark:bg-primary-950/60 size-10 items-center justify-center rounded-xl bg-primary-100">
-                    <Text className="text-base font-bold text-primary-700 dark:text-primary-300">
-                      {owner.name.charAt(0)}
+            {stats.owners.length === 0 ? (
+              <View className="items-center rounded-3xl border border-dashed border-neutral-300 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900">
+                <View className="dark:bg-primary-950/40 size-12 items-center justify-center rounded-2xl bg-primary-50">
+                  <Users size={24} color="#4F46E5" />
+                </View>
+                <Text className="mt-3 text-sm font-bold text-neutral-900 dark:text-white">
+                  No Carpool Owners Added
+                </Text>
+                <Text className="mt-1 max-w-[260px] text-center text-xs text-neutral-400">
+                  Add your carpool drivers to calculate fares, split trips, and track balances.
+                </Text>
+                <TouchableOpacity
+                  onPress={() => router.push('/owners/edit')}
+                  className="mt-4 flex-row items-center rounded-xl bg-primary-600 px-4 py-2.5 shadow-sm active:bg-primary-700"
+                >
+                  <Plus size={16} color="#ffffff" />
+                  <Text className="ml-1.5 text-xs font-bold text-white">Add Carpool Owner</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              stats.owners.map(owner => (
+                <TouchableOpacity
+                  key={owner.id}
+                  onPress={() => router.push(`/owners/${owner.id}`)}
+                  className="flex-row items-center justify-between rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
+                >
+                  <View className="flex-1 flex-row items-center">
+                    <View className="dark:bg-primary-950/60 size-10 items-center justify-center rounded-xl bg-primary-100">
+                      <Text className="text-base font-bold text-primary-700 dark:text-primary-300">
+                        {owner.name.charAt(0)}
+                      </Text>
+                    </View>
+                    <View className="ml-3 flex-1">
+                      <Text className="text-sm font-bold text-neutral-900 dark:text-white">
+                        {owner.name}
+                      </Text>
+                      <Text className="text-[11px] text-neutral-400">
+                        {owner.unpaid_trips_count > 0
+                          ? `${owner.unpaid_trips_count} unpaid trip${owner.unpaid_trips_count > 1 ? 's' : ''}`
+                          : 'No pending trips'}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View className="items-end pl-3">
+                    <Text
+                      className={`text-base font-black ${
+                        owner.outstanding_balance_paise > 0
+                          ? 'text-amber-600 dark:text-amber-400'
+                          : 'text-emerald-600 dark:text-emerald-400'
+                      }`}
+                    >
+                      {formatPaise(owner.outstanding_balance_paise)}
+                    </Text>
+                    <Text className="text-[10px] text-neutral-400">
+                      {owner.last_payment_date ? `Paid ${formatDateFriendly(owner.last_payment_date)}` : 'No payments yet'}
                     </Text>
                   </View>
-                  <View className="ml-3 flex-1">
-                    <Text className="text-sm font-bold text-neutral-900 dark:text-white">
-                      {owner.name}
-                    </Text>
-                    <Text className="text-[11px] text-neutral-400">
-                      {owner.unpaid_trips_count > 0
-                        ? `${owner.unpaid_trips_count} unpaid trip${owner.unpaid_trips_count > 1 ? 's' : ''}`
-                        : 'No pending trips'}
-                    </Text>
-                  </View>
-                </View>
 
-                <View className="items-end pl-3">
-                  <Text
-                    className={`text-base font-black ${
-                      owner.outstanding_balance_paise > 0
-                        ? 'text-amber-600 dark:text-amber-400'
-                        : 'text-emerald-600 dark:text-emerald-400'
-                    }`}
-                  >
-                    {formatPaise(owner.outstanding_balance_paise)}
-                  </Text>
-                  <Text className="text-[10px] text-neutral-400">
-                    {owner.last_payment_date ? `Paid ${formatDateFriendly(owner.last_payment_date)}` : 'No payments yet'}
-                  </Text>
-                </View>
-
-                <ChevronRight size={16} color="#a1a1aa" className="ml-2" />
-              </TouchableOpacity>
-            ))}
+                  <ChevronRight size={16} color="#a1a1aa" className="ml-2" />
+                </TouchableOpacity>
+              ))
+            )}
           </View>
         </View>
 

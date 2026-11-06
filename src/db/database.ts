@@ -44,12 +44,13 @@ export function initDatabase(): SQLite.SQLiteDatabase {
   );
 
   if (!existingSettings) {
+    const todayDate = new Date().toISOString().slice(0, 10);
     db.runSync(
       `INSERT INTO app_settings (
         id, reminder_enabled, reminder_hour, reminder_minute,
         secondary_reminder_enabled, secondary_reminder_hour, secondary_reminder_minute,
-        default_owner_id, theme, currency, currency_symbol, working_days
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        default_owner_id, theme, currency, currency_symbol, working_days, tracking_start_date
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         'default',
         1, // reminder_enabled
@@ -63,78 +64,39 @@ export function initDatabase(): SQLite.SQLiteDatabase {
         'INR',
         '₹',
         '1,2,3,4,5', // Mon - Fri
+        todayDate,
       ],
     );
   }
 
-  // Seed default owners if none exist (Raj, Amit, Suresh) as per the prompt requirements
-  const ownerCount = db.getFirstSync<{ count: number }>(
-    'SELECT COUNT(*) as count FROM carpool_owners',
-  )?.count ?? 0;
-
-  if (ownerCount === 0) {
-    const now = new Date().toISOString();
-    const defaultOwners: Omit<CarpoolOwner, 'updated_at'>[] = [
-      {
-        id: 'owner-raj',
-        name: 'Raj',
-        phone: '+91 98765 43210',
-        default_morning_fare_paise: 6000, // ₹60
-        default_evening_fare_paise: 6000, // ₹60
-        notes: 'Primary carpool driver. Morning & evening standard route.',
-        is_active: 1,
-        created_at: now,
-      },
-      {
-        id: 'owner-amit',
-        name: 'Amit',
-        phone: '+91 98123 45678',
-        default_morning_fare_paise: 7000, // ₹70
-        default_evening_fare_paise: 6000, // ₹60
-        notes: 'Alternate carpool for evening trips or late shifts.',
-        is_active: 1,
-        created_at: now,
-      },
-      {
-        id: 'owner-suresh',
-        name: 'Suresh',
-        phone: '+91 99887 76655',
-        default_morning_fare_paise: 5000, // ₹50
-        default_evening_fare_paise: 5000, // ₹50
-        notes: 'Shared commute on Fridays.',
-        is_active: 1,
-        created_at: now,
-      },
-    ];
-
-    for (const owner of defaultOwners) {
-      db.runSync(
-        `INSERT INTO carpool_owners (
-          id, name, phone, default_morning_fare_paise, default_evening_fare_paise,
-          notes, is_active, created_at, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [
-          owner.id,
-          owner.name,
-          owner.phone ?? null,
-          owner.default_morning_fare_paise,
-          owner.default_evening_fare_paise,
-          owner.notes ?? null,
-          owner.is_active,
-          owner.created_at,
-          now,
-        ],
-      );
-    }
-
-    // Set Raj as default owner in app_settings
-    db.runSync(
-      'UPDATE app_settings SET default_owner_id = ? WHERE id = ?',
-      ['owner-raj', 'default'],
-    );
+  // Safe migration: Add tracking_start_date to app_settings if upgrading
+  try {
+    db.runSync('ALTER TABLE app_settings ADD COLUMN tracking_start_date TEXT');
+    const todayDate = new Date().toISOString().slice(0, 10);
+    db.runSync('UPDATE app_settings SET tracking_start_date = ? WHERE tracking_start_date IS NULL', [todayDate]);
+  }
+  catch {
+    // Column already exists
   }
 
   return db;
+}
+
+export function resetToFactoryCleanSlate() {
+  const db = getDatabase();
+  const todayDate = new Date().toISOString().slice(0, 10);
+  db.withTransactionSync(() => {
+    db.runSync('DELETE FROM payment_allocations');
+    db.runSync('DELETE FROM payments');
+    db.runSync('DELETE FROM commute_trips');
+    db.runSync('DELETE FROM commute_days');
+    db.runSync('DELETE FROM carpool_owners');
+    db.runSync('DELETE FROM audit_logs');
+    db.runSync(
+      'UPDATE app_settings SET default_owner_id = NULL, tracking_start_date = ? WHERE id = "default"',
+      [todayDate],
+    );
+  });
 }
 
 export function recordAuditLog(

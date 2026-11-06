@@ -95,6 +95,7 @@ export type AppSettings = {
   currency: string;
   currency_symbol: string;
   working_days: number[]; // [1, 2, 3, 4, 5] for Mon-Fri
+  tracking_start_date?: string | null;
 };
 
 export type AuditLog = {

@@ -70,7 +70,8 @@ export const SCHEMA_STATEMENTS = [
     theme TEXT NOT NULL DEFAULT 'system',
     currency TEXT NOT NULL DEFAULT 'INR',
     currency_symbol TEXT NOT NULL DEFAULT '₹',
-    working_days TEXT NOT NULL DEFAULT '1,2,3,4,5'
+    working_days TEXT NOT NULL DEFAULT '1,2,3,4,5',
+    tracking_start_date TEXT
   );`,
 
   // Audit Logs (Financial and mutation audit trail)

@@ -85,67 +85,87 @@ export default function OwnersListScreen() {
 
         {/* Owners List Cards */}
         <View className="gap-3">
-          {owners.map(owner => (
-            <TouchableOpacity
-              key={owner.id}
-              onPress={() => router.push(`/owners/${owner.id}`)}
-              className="flex-row items-center justify-between rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
-            >
-              <View className="flex-1 flex-row items-center">
-                <View className="dark:bg-primary-950/60 size-12 items-center justify-center rounded-2xl bg-primary-100">
-                  <Text className="text-lg font-bold text-primary-700 dark:text-primary-300">
-                    {owner.name.charAt(0).toUpperCase()}
+          {owners.length === 0 ? (
+            <View className="items-center justify-center rounded-3xl border border-dashed border-neutral-300 bg-white p-8 text-center dark:border-neutral-800 dark:bg-neutral-900">
+              <View className="dark:bg-primary-950/40 size-16 items-center justify-center rounded-full bg-primary-50">
+                <User size={28} color="#4F46E5" />
+              </View>
+              <Text className="mt-4 text-base font-bold text-neutral-900 dark:text-white">
+                {showArchived ? 'No Archived Owners' : 'No Carpool Owners Yet'}
+              </Text>
+              <Text className="mt-1.5 max-w-[260px] text-center text-xs text-neutral-400">
+                Add the people you carpool with along with their contact details and standard fares.
+              </Text>
+              <TouchableOpacity
+                onPress={() => router.push('/owners/edit')}
+                className="mt-5 flex-row items-center rounded-2xl bg-primary-600 px-5 py-3 shadow-sm active:bg-primary-700"
+              >
+                <Plus size={18} color="#ffffff" />
+                <Text className="ml-2 text-sm font-bold text-white">Add Carpool Owner</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            owners.map(owner => (
+              <TouchableOpacity
+                key={owner.id}
+                onPress={() => router.push(`/owners/${owner.id}`)}
+                className="flex-row items-center justify-between rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
+              >
+                <View className="flex-1 flex-row items-center">
+                  <View className="dark:bg-primary-950/60 size-12 items-center justify-center rounded-2xl bg-primary-100">
+                    <Text className="text-lg font-bold text-primary-700 dark:text-primary-300">
+                      {owner.name.charAt(0).toUpperCase()}
+                    </Text>
+                  </View>
+
+                  <View className="ml-3.5 flex-1">
+                    <View className="flex-row items-center">
+                      <Text className="text-base font-bold text-neutral-900 dark:text-white">
+                        {owner.name}
+                      </Text>
+                      {owner.is_active === 0 && (
+                        <View className="ml-2 rounded-md bg-neutral-100 px-1.5 py-0.5 dark:bg-neutral-800">
+                          <Text className="text-[10px] font-semibold text-neutral-500">
+                            Archived
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+
+                    <View className="mt-1 flex-row items-center">
+                      <Text className="text-xs text-neutral-500">
+                        Standard:
+                        {' '}
+                        {formatPaise(owner.default_morning_fare_paise)}
+                        {' '}
+                        /
+                        {' '}
+                        {formatPaise(owner.default_evening_fare_paise)}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+
+                <View className="items-end pl-3">
+                  <Text
+                    className={`text-base font-extrabold ${
+                      owner.outstanding_balance_paise > 0
+                        ? 'text-amber-600 dark:text-amber-400'
+                        : 'text-emerald-600 dark:text-emerald-400'
+                    }`}
+                  >
+                    {formatPaise(owner.outstanding_balance_paise)}
+                  </Text>
+                  <Text className="text-[11px] text-neutral-400">
+                    {owner.unpaid_trips_count}
+                    {' '}
+                    unpaid
                   </Text>
                 </View>
 
-                <View className="ml-3.5 flex-1">
-                  <View className="flex-row items-center">
-                    <Text className="text-base font-bold text-neutral-900 dark:text-white">
-                      {owner.name}
-                    </Text>
-                    {owner.is_active === 0 && (
-                      <View className="ml-2 rounded-md bg-neutral-100 px-1.5 py-0.5 dark:bg-neutral-800">
-                        <Text className="text-[10px] font-semibold text-neutral-500">
-                          Archived
-                        </Text>
-                      </View>
-                    )}
-                  </View>
-
-                  <View className="mt-1 flex-row items-center">
-                    <Text className="text-xs text-neutral-500">
-                      Standard:
-                      {' '}
-                      {formatPaise(owner.default_morning_fare_paise)}
-                      {' '}
-                      /
-                      {' '}
-                      {formatPaise(owner.default_evening_fare_paise)}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-
-              <View className="items-end pl-3">
-                <Text
-                  className={`text-base font-extrabold ${
-                    owner.outstanding_balance_paise > 0
-                      ? 'text-amber-600 dark:text-amber-400'
-                      : 'text-emerald-600 dark:text-emerald-400'
-                  }`}
-                >
-                  {formatPaise(owner.outstanding_balance_paise)}
-                </Text>
-                <Text className="text-[11px] text-neutral-400">
-                  {owner.unpaid_trips_count}
-                  {' '}
-                  unpaid
-                </Text>
-              </View>
-
-              <ChevronRight size={18} color="#a1a1aa" className="ml-2" />
-            </TouchableOpacity>
-          ))}
+                <ChevronRight size={18} color="#a1a1aa" className="ml-2" />
+              </TouchableOpacity>
+            )))}
         </View>
 
         <View className="h-20" />

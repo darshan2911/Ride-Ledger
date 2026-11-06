@@ -64,6 +64,15 @@ export default function BulkLogScreen() {
       return;
     }
 
+    if (commuteType === 'carpool' && owners.length === 0) {
+      showMessage({
+        message: 'No Carpool Driver Available',
+        description: 'Please add a carpool driver first or select Own Bike or Leave.',
+        type: 'warning',
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const farePaise = rupeesToPaise(farePerDayStr);
@@ -260,27 +269,44 @@ export default function BulkLogScreen() {
         {commuteType === 'carpool' && (
           <View className="mb-5 gap-3 rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
             <Text className="text-xs font-medium text-neutral-500">Carpool Owner</Text>
-            <View className="flex-row flex-wrap gap-2">
-              {owners.map(owner => (
+            {owners.length === 0 ? (
+              <View className="rounded-xl border border-dashed border-amber-300 bg-amber-50/70 p-3 dark:border-amber-800/60 dark:bg-amber-950/20">
+                <Text className="text-xs font-bold text-amber-900 dark:text-amber-200">
+                  No carpool drivers added yet
+                </Text>
+                <Text className="mt-0.5 text-[11px] text-amber-800/80 dark:text-amber-300/80">
+                  Add a carpool driver to track balances and expenses.
+                </Text>
                 <TouchableOpacity
-                  key={owner.id}
-                  onPress={() => setOwnerId(owner.id)}
-                  className={`rounded-xl border px-3 py-2 ${
-                    ownerId === owner.id
-                      ? 'dark:bg-primary-950/30 border-primary-600 bg-primary-50'
-                      : 'border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-800'
-                  }`}
+                  onPress={() => router.push('/owners/edit')}
+                  className="mt-2.5 self-start rounded-lg bg-amber-600 px-3 py-1.5 active:bg-amber-700"
                 >
-                  <Text
-                    className={`text-xs font-bold ${
-                      ownerId === owner.id ? 'text-primary-700' : 'text-neutral-700'
+                  <Text className="text-xs font-bold text-white">+ Add Driver</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View className="flex-row flex-wrap gap-2">
+                {owners.map(owner => (
+                  <TouchableOpacity
+                    key={owner.id}
+                    onPress={() => setOwnerId(owner.id)}
+                    className={`rounded-xl border px-3 py-2 ${
+                      ownerId === owner.id
+                        ? 'dark:bg-primary-950/30 border-primary-600 bg-primary-50'
+                        : 'border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-800'
                     }`}
                   >
-                    {owner.name}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+                    <Text
+                      className={`text-xs font-bold ${
+                        ownerId === owner.id ? 'text-primary-700' : 'text-neutral-700'
+                      }`}
+                    >
+                      {owner.name}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
 
             <View className="flex-row items-center justify-between pt-2">
               <Text className="text-xs font-medium text-neutral-500">Daily Round Fare (₹)</Text>
