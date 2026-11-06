@@ -1,20 +1,27 @@
+import type { AppStateStatus } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system/legacy';
 import { useRouter } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 import {
+  AlertCircle,
   Bell,
+  CheckCircle2,
   Download,
+  ExternalLink,
   FileSpreadsheet,
+  Layers,
   RotateCcw,
   Send,
+  Sparkles,
   Upload,
   Users,
 } from 'lucide-react-native';
 import * as React from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Alert,
+  AppState,
   ScrollView,
   Switch,
   TextInput,
@@ -35,6 +42,7 @@ import {
   scheduleDailyReminder,
   triggerImmediateTestNotification,
 } from '@/lib/notifications';
+import { OverlayManager } from '@/lib/overlay';
 import { useRideLedgerStore } from '@/lib/rideledger-store';
 
 export default function SettingsScreen() {
@@ -49,6 +57,25 @@ export default function SettingsScreen() {
   const [reminderMinuteStr, setReminderMinuteStr] = useState(
     String(settings.reminder_minute).padStart(2, '0'),
   );
+  const [canDrawOverlays, setCanDrawOverlays] = useState(false);
+  const [isTestingOverlay, setIsTestingOverlay] = useState(false);
+
+  const checkOverlayPermission = async () => {
+    const granted = await OverlayManager.canDrawOverlays();
+    setCanDrawOverlays(granted);
+  };
+
+  useEffect(() => {
+    checkOverlayPermission();
+
+    const sub = AppState.addEventListener('change', (nextState: AppStateStatus) => {
+      if (nextState === 'active') {
+        checkOverlayPermission();
+      }
+    });
+
+    return () => sub.remove();
+  }, []);
 
   const handleToggleReminder = async (enabled: boolean) => {
     setReminderEnabled(enabled);
@@ -67,17 +94,19 @@ export default function SettingsScreen() {
         return;
       }
 
-      await scheduleDailyReminder(Number(reminderHourStr) || 21, Number(reminderMinuteStr) || 0);
+      const h = Number(reminderHourStr) || 21;
+      const m = Number(reminderMinuteStr) || 0;
+      await scheduleDailyReminder(h, m);
+      await OverlayManager.scheduleDailyAlarm(h, m);
       showMessage({
-        message: 'Daily Reminder Scheduled ⏰',
-        description: `Set for ${String(reminderHourStr).padStart(2, '0')}:${String(
-          reminderMinuteStr,
-        ).padStart(2, '0')}`,
+        message: 'Daily Reminders & Overlay Armed! 🔔',
+        description: `Set for ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`,
         type: 'success',
       });
     }
     else {
       await cancelAllCommuteReminders();
+      await OverlayManager.cancelDailyAlarm();
       showMessage({
         message: 'Reminders Disabled',
         type: 'info',
@@ -102,6 +131,7 @@ export default function SettingsScreen() {
 
     if (reminderEnabled) {
       await scheduleDailyReminder(h, m);
+      await OverlayManager.scheduleDailyAlarm(h, m);
       showMessage({
         message: 'Reminder Time Updated! ⏰',
         description: `Reminder will trigger daily at ${String(h).padStart(2, '0')}:${String(
@@ -109,6 +139,41 @@ export default function SettingsScreen() {
         ).padStart(2, '0')}`,
         type: 'success',
       });
+    }
+  };
+
+  const handleRequestOverlay = async () => {
+    await OverlayManager.openOverlaySettings();
+  };
+
+  const handleTestOverlay = async () => {
+    if (!canDrawOverlays) {
+      Alert.alert(
+        'Overlay Permission Needed',
+        'To have RideLedger pop up over other apps when the alarm fires, please enable "Allow display over other apps" in Android settings.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Open Settings', onPress: handleRequestOverlay },
+        ],
+      );
+      return;
+    }
+
+    setIsTestingOverlay(true);
+    try {
+      await OverlayManager.triggerTestAlarm(5);
+      showMessage({
+        message: 'Overlay Pop-up Triggered (5s) 🚀',
+        description: 'Switch to your home screen or another app now! RideLedger will pop up directly over it in 5s.',
+        type: 'success',
+        duration: 5000,
+      });
+    }
+    catch (e: any) {
+      Alert.alert('Overlay Error', e.message);
+    }
+    finally {
+      setIsTestingOverlay(false);
     }
   };
 
@@ -345,6 +410,79 @@ export default function SettingsScreen() {
               </TouchableOpacity>
             </View>
           )}
+        </View>
+
+        {/* Display Over Other Apps (Overlay Pop-up) */}
+        <View className="mb-5 rounded-3xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+          <View className="flex-row items-center justify-between">
+            <View className="mr-2 flex-1 flex-row items-center">
+              <View className="rounded-xl bg-purple-50 p-2 dark:bg-purple-950/40">
+                <Layers size={20} color="#9333ea" />
+              </View>
+              <View className="ml-3 flex-1">
+                <Text className="text-sm font-bold text-neutral-900 dark:text-white">
+                  Display Over Other Apps
+                </Text>
+                <Text className="text-xs text-neutral-500">
+                  Pops up Quick Log directly over any screen
+                </Text>
+              </View>
+            </View>
+
+            {/* Permission Status Pill */}
+            <View
+              className={`flex-row items-center rounded-full px-2.5 py-1 ${
+                canDrawOverlays
+                  ? 'bg-emerald-50 dark:bg-emerald-950/40'
+                  : 'bg-amber-50 dark:bg-amber-950/40'
+              }`}
+            >
+              {canDrawOverlays ? (
+                <>
+                  <CheckCircle2 size={12} color="#10b981" />
+                  <Text className="ml-1 text-xs font-bold text-emerald-700 dark:text-emerald-300">
+                    Active
+                  </Text>
+                </>
+              ) : (
+                <>
+                  <AlertCircle size={12} color="#f59e0b" />
+                  <Text className="ml-1 text-xs font-bold text-amber-700 dark:text-amber-300">
+                    Permission Needed
+                  </Text>
+                </>
+              )}
+            </View>
+          </View>
+
+          <Text className="mt-3 text-xs/relaxed text-neutral-600 dark:text-neutral-400">
+            Allows RideLedger to automatically pop up the Quick Log interface directly over whatever app you are using when your commute reminder fires.
+          </Text>
+
+          <View className="mt-4 gap-2.5">
+            {!canDrawOverlays && (
+              <TouchableOpacity
+                onPress={handleRequestOverlay}
+                className="flex-row items-center justify-center rounded-2xl bg-purple-600 py-3 active:bg-purple-700"
+              >
+                <ExternalLink size={16} color="#ffffff" />
+                <Text className="ml-2 text-xs font-bold text-white">
+                  Grant "Display Over Other Apps" Permission
+                </Text>
+              </TouchableOpacity>
+            )}
+
+            <TouchableOpacity
+              onPress={handleTestOverlay}
+              disabled={isTestingOverlay}
+              className="flex-row items-center justify-center rounded-2xl border border-purple-200 bg-purple-50 py-3 active:bg-purple-100 dark:border-purple-800 dark:bg-purple-950/30"
+            >
+              <Sparkles size={16} color="#9333ea" />
+              <Text className="ml-2 text-xs font-bold text-purple-700 dark:text-purple-300">
+                {isTestingOverlay ? 'Triggering...' : 'Test Overlay Pop-up (5s Delay)'}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Carpool Drivers Section */}

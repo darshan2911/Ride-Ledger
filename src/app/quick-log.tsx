@@ -167,7 +167,7 @@ export default function QuickLogScreen() {
         icon: 'success',
       });
 
-      router.back();
+      handleClose();
     }
     catch (error: any) {
       showMessage({
@@ -178,6 +178,15 @@ export default function QuickLogScreen() {
     }
     finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleClose = () => {
+    if (router.canGoBack()) {
+      router.back();
+    }
+    else {
+      router.replace('/(app)');
     }
   };
 
@@ -201,7 +210,7 @@ export default function QuickLogScreen() {
           </Text>
         </View>
         <TouchableOpacity
-          onPress={() => router.back()}
+          onPress={handleClose}
           className="rounded-full bg-neutral-100 p-2 dark:bg-neutral-800"
         >
           <X size={20} color="#71717a" />

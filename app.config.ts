@@ -64,6 +64,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       'android.permission.POST_NOTIFICATIONS',
       'android.permission.SCHEDULE_EXACT_ALARM',
       'android.permission.VIBRATE',
+      'android.permission.SYSTEM_ALERT_WINDOW',
+      'android.permission.USE_FULL_SCREEN_INTENT',
+      'android.permission.WAKE_LOCK',
     ],
   },
   web: {
