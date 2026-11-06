@@ -84,7 +84,7 @@ export default function OwnersListScreen() {
         </View>
 
         {/* Owners List Cards */}
-        <View className="space-y-3">
+        <View className="gap-3">
           {owners.map(owner => (
             <TouchableOpacity
               key={owner.id}

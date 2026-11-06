@@ -4,13 +4,10 @@ import { useRouter } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 import {
   Bell,
-  Calendar,
   Download,
   FileSpreadsheet,
-  Moon,
+  RotateCcw,
   Send,
-  ShieldCheck,
-  Sun,
   Upload,
   Users,
 } from 'lucide-react-native';
@@ -29,7 +26,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { FocusAwareStatusBar } from '@/components/ui/focus-aware-status-bar';
 import { Text } from '@/components/ui/text';
-import { BackupRepo } from '@/db';
+import { BackupRepo, CommutesRepo } from '@/db';
 import { useSettings } from '@/lib/hooks/use-rideledger';
 import { useSelectedTheme } from '@/lib/hooks/use-selected-theme';
 import {
@@ -234,6 +231,29 @@ export default function SettingsScreen() {
     }
   };
 
+  const handleResetCleanSlate = () => {
+    Alert.alert(
+      'Reset Commute History',
+      'This will clear all recorded commute trips and payments, returning all driver balances to ₹0 so you can start logging fresh. Your carpool drivers will be preserved. Are you sure?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Reset to Clean Slate',
+          style: 'destructive',
+          onPress: () => {
+            CommutesRepo.clearAllCommutesAndPayments();
+            triggerRefresh();
+            showMessage({
+              message: 'Database Reset to Clean Slate! ✨',
+              description: 'All test trips and payments have been removed. Ready for your real commute!',
+              type: 'success',
+            });
+          },
+        },
+      ],
+    );
+  };
+
   return (
     <View
       style={{ paddingTop: insets.top }}
@@ -282,7 +302,7 @@ export default function SettingsScreen() {
                 Preferred Reminder Time (24h format)
               </Text>
 
-              <View className="flex-row items-center space-x-2">
+              <View className="flex-row items-center gap-2">
                 <View className="flex-row items-center rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-2 dark:border-neutral-700 dark:bg-neutral-800">
                   <TextInput
                     value={reminderHourStr}
@@ -359,7 +379,7 @@ export default function SettingsScreen() {
             Offline Backup & Export
           </Text>
 
-          <View className="space-y-2">
+          <View className="gap-2.5">
             <TouchableOpacity
               onPress={handleExportJson}
               className="flex-row items-center justify-between rounded-2xl border border-neutral-200 bg-neutral-50 p-3.5 dark:border-neutral-800 dark:bg-neutral-800/50"
@@ -413,13 +433,37 @@ export default function SettingsScreen() {
           </View>
         </View>
 
+        {/* Database Clean Slate / Reset Section */}
+        <View className="mb-5 rounded-3xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+          <Text className="mb-3 text-xs font-semibold tracking-wider text-neutral-400 uppercase">
+            Reset Commute History
+          </Text>
+
+          <TouchableOpacity
+            onPress={handleResetCleanSlate}
+            className="flex-row items-center justify-between rounded-2xl border border-red-200 bg-red-50/50 p-3.5 active:bg-red-100/60 dark:border-red-900/40 dark:bg-red-950/20"
+          >
+            <View className="flex-row items-center">
+              <RotateCcw size={18} color="#ef4444" />
+              <View className="ml-3">
+                <Text className="text-xs font-bold text-red-600 dark:text-red-400">
+                  Reset to Clean Slate (Ready to Use)
+                </Text>
+                <Text className="text-[11px] text-neutral-500 dark:text-neutral-400">
+                  Clears all logged trips & resets balances to ₹0
+                </Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+        </View>
+
         {/* Theme Preference */}
         <View className="mb-6 rounded-3xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
           <Text className="mb-3 text-xs font-semibold tracking-wider text-neutral-400 uppercase">
             Appearance
           </Text>
 
-          <View className="flex-row space-x-2">
+          <View className="flex-row gap-2">
             {(['system', 'light', 'dark'] as const).map((t) => {
               const isSelected = selectedTheme === t;
               return (

@@ -9,8 +9,14 @@ import {
 } from 'lucide-react-native';
 import * as React from 'react';
 import { useCallback, useEffect } from 'react';
+import { useColorScheme } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function TabLayout() {
+  const insets = useSafeAreaInsets();
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
+
   const hideSplash = useCallback(async () => {
     try {
       await SplashScreen.hideAsync();
@@ -25,16 +31,20 @@ export default function TabLayout() {
     return () => clearTimeout(timer);
   }, [hideSplash]);
 
+  const bottomInset = Math.max(8, insets.bottom);
+  const tabHeight = 58 + bottomInset;
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: '#4F46E5',
-        tabBarInactiveTintColor: '#a1a1aa',
+        tabBarInactiveTintColor: isDark ? '#71717a' : '#a1a1aa',
         tabBarStyle: {
-          borderTopColor: '#f4f4f5',
-          height: 60,
-          paddingBottom: 8,
+          backgroundColor: isDark ? '#18181b' : '#ffffff',
+          borderTopColor: isDark ? '#27272a' : '#f4f4f5',
+          height: tabHeight,
+          paddingBottom: bottomInset,
           paddingTop: 8,
         },
         tabBarLabelStyle: {

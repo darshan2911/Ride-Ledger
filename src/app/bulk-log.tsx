@@ -134,7 +134,7 @@ export default function BulkLogScreen() {
               {unloggedDates.length}
               )
             </Text>
-            <View className="flex-row space-x-2">
+            <View className="flex-row gap-2">
               <TouchableOpacity onPress={selectAll} className="px-2 py-1">
                 <Text className="text-xs font-semibold text-primary-600">Select All</Text>
               </TouchableOpacity>
@@ -153,7 +153,7 @@ export default function BulkLogScreen() {
                 </View>
               )
             : (
-                <View className="space-y-2">
+                <View className="gap-2">
                   {unloggedDates.map((d) => {
                     const isSelected = selectedDates.includes(d);
                     return (
@@ -201,7 +201,7 @@ export default function BulkLogScreen() {
           Commute Details for Selected Dates
         </Text>
 
-        <View className="mb-5 flex-row space-x-2">
+        <View className="mb-5 flex-row gap-2.5">
           <TouchableOpacity
             onPress={() => setCommuteType('carpool')}
             className={`flex-1 items-center rounded-2xl border p-3 ${
@@ -258,7 +258,7 @@ export default function BulkLogScreen() {
         </View>
 
         {commuteType === 'carpool' && (
-          <View className="mb-5 space-y-3 rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
+          <View className="mb-5 gap-3 rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
             <Text className="text-xs font-medium text-neutral-500">Carpool Owner</Text>
             <View className="flex-row flex-wrap gap-2">
               {owners.map(owner => (

@@ -225,10 +225,10 @@ export default function RecordPaymentScreen() {
         </View>
 
         {/* Payment Method & Date */}
-        <View className="mb-5 space-y-4 rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
+        <View className="mb-5 gap-4 rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
           <View>
             <Text className="mb-2 text-xs font-medium text-neutral-500">Payment Method</Text>
-            <View className="flex-row space-x-2">
+            <View className="flex-row gap-2">
               {(['upi', 'cash', 'bank_transfer'] as PaymentMethod[]).map(method => (
                 <TouchableOpacity
                   key={method}
@@ -276,7 +276,7 @@ export default function RecordPaymentScreen() {
               {candidateTrips.length}
               )
             </Text>
-            <View className="flex-row space-x-2">
+            <View className="flex-row items-center gap-2">
               <TouchableOpacity onPress={handleSelectAll}>
                 <Text className="text-xs font-semibold text-primary-600">Select All</Text>
               </TouchableOpacity>
@@ -299,7 +299,7 @@ export default function RecordPaymentScreen() {
                 </View>
               )
             : (
-                <View className="space-y-2">
+                <View className="gap-2">
                   {candidateTrips.map((t) => {
                     const isSelected = selectedTripIds.includes(t.id);
                     return (

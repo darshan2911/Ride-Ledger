@@ -105,7 +105,7 @@ export default function HistoryScreen() {
         </View>
 
         {/* Commute Type Filters */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mt-3 flex-row space-x-1.5">
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mt-3 flex-row gap-2">
           {(['all', 'carpool', 'own_vehicle', 'leave'] as const).map((type) => {
             const isSelected = commuteType === type;
             return (
@@ -143,7 +143,7 @@ export default function HistoryScreen() {
             Found
           </Text>
           {commuteType === 'carpool' && (
-            <View className="flex-row items-center space-x-2">
+            <View className="flex-row items-center gap-2">
               <TouchableOpacity
                 onPress={() => setPaymentStatus(paymentStatus === 'unpaid' ? 'all' : 'unpaid')}
                 className={`rounded-lg border px-2 py-0.5 ${
@@ -159,7 +159,7 @@ export default function HistoryScreen() {
         </View>
 
         {/* Commutes List */}
-        <View className="space-y-3">
+        <View className="gap-3">
           {commutes.length === 0 ? (
             <View className="items-center rounded-2xl border border-dashed border-neutral-200 py-12 dark:border-neutral-800">
               <Calendar size={36} color="#a1a1aa" />
@@ -193,7 +193,7 @@ export default function HistoryScreen() {
                       <CommuteBadge type={item.commute_type} size="sm" />
                     </View>
 
-                    <View className="flex-row items-center space-x-1">
+                    <View className="flex-row items-center gap-1.5">
                       <TouchableOpacity
                         onPress={() => router.push(`/quick-log?date=${item.date}`)}
                         className="rounded-full bg-neutral-100 p-1.5 dark:bg-neutral-800"
@@ -211,7 +211,7 @@ export default function HistoryScreen() {
 
                   {/* Trip Details if Carpool */}
                   {item.commute_type === 'carpool' && (
-                    <View className="mt-3 space-y-1.5 rounded-xl bg-neutral-50 p-2.5 dark:bg-neutral-800/40">
+                    <View className="mt-3 gap-2 rounded-xl bg-neutral-50 p-2.5 dark:bg-neutral-800/40">
                       {morning && (
                         <View className="flex-row items-center justify-between">
                           <View className="flex-row items-center">

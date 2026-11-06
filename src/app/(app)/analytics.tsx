@@ -88,7 +88,7 @@ export default function AnalyticsScreen() {
 
       <ScrollView className="flex-1 px-5 py-4" showsVerticalScrollIndicator={false}>
         {/* Top 2 Metric Cards */}
-        <View className="mb-4 flex-row space-x-3">
+        <View className="mb-4 flex-row gap-3">
           <View className="flex-1">
             <StatCard
               title="Month Expense"
@@ -111,7 +111,7 @@ export default function AnalyticsScreen() {
         </View>
 
         {/* Year Expense & Outstanding */}
-        <View className="mb-5 flex-row space-x-3">
+        <View className="mb-5 flex-row gap-3">
           <View className="flex-1">
             <StatCard
               title="Year-to-Date"
@@ -197,7 +197,7 @@ export default function AnalyticsScreen() {
               <Text className="text-xs text-neutral-400">No carpool trips logged this month.</Text>
             </View>
           ) : (
-            <View className="space-y-3">
+            <View className="gap-3">
               {analytics.owner_distribution.map((driver) => {
                 const percent
                   = analytics.total_carpool_expense_paise > 0

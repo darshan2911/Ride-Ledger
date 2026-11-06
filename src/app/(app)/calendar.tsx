@@ -235,9 +235,9 @@ export default function CalendarScreen() {
 
           {selectedCommute
             ? (
-                <View className="mt-4 space-y-3 border-t border-neutral-100 pt-3 dark:border-neutral-800">
+                <View className="mt-4 gap-3 border-t border-neutral-100 pt-3 dark:border-neutral-800">
                   {selectedCommute.commute_type === 'carpool' && (
-                    <View className="space-y-2">
+                    <View className="gap-2">
                       {selectedCommute.trips.map(t => (
                         <View
                           key={t.id}

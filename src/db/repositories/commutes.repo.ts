@@ -304,4 +304,15 @@ export const CommutesRepo = {
       });
     }
   },
+
+  clearAllCommutesAndPayments() {
+    const db = getDatabase();
+    db.withTransactionSync(() => {
+      db.runSync('DELETE FROM payment_allocations');
+      db.runSync('DELETE FROM payments');
+      db.runSync('DELETE FROM commute_trips');
+      db.runSync('DELETE FROM commute_days');
+      db.runSync('DELETE FROM audit_logs WHERE entity_type IN ("commute_days", "commute_trips", "payments", "payment_allocations")');
+    });
+  },
 };

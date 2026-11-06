@@ -111,7 +111,7 @@ export default function OwnerDetailsScreen() {
           ’s Account
         </Text>
 
-        <View className="flex-row items-center space-x-1">
+        <View className="flex-row items-center gap-1.5">
           <TouchableOpacity
             onPress={() => router.push(`/owners/edit?id=${owner.id}`)}
             className="rounded-full bg-neutral-100 p-2 dark:bg-neutral-800"
@@ -283,7 +283,7 @@ export default function OwnerDetailsScreen() {
 
         {/* Tab 1: Unpaid Trips */}
         {activeTab === 'unpaid' && (
-          <View className="space-y-2">
+          <View className="gap-2.5">
             {[...unpaidTrips, ...partiallyPaidTrips].length === 0
               ? (
                   <View className="items-center rounded-2xl border border-dashed border-neutral-200 p-6 py-8 dark:border-neutral-800">
@@ -350,7 +350,7 @@ export default function OwnerDetailsScreen() {
 
         {/* Tab 2: All Trips */}
         {activeTab === 'all' && (
-          <View className="space-y-2">
+          <View className="gap-2.5">
             {allTrips.map(t => (
               <View
                 key={t.id}
@@ -395,7 +395,7 @@ export default function OwnerDetailsScreen() {
 
         {/* Tab 3: Payments */}
         {activeTab === 'payments' && (
-          <View className="space-y-2">
+          <View className="gap-2.5">
             {payments.length === 0
               ? (
                   <View className="items-center py-8">

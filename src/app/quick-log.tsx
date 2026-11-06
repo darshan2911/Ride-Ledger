@@ -217,7 +217,7 @@ export default function QuickLogScreen() {
               Date:
             </Text>
           </View>
-          <View className="flex-row items-center space-x-2">
+          <View className="flex-row items-center gap-2">
             <TouchableOpacity
               onPress={() => setDate(getTodayDateString())}
               className={`rounded-lg px-2.5 py-1 ${
@@ -361,7 +361,7 @@ export default function QuickLogScreen() {
 
         {/* If Carpool Selected: Trip Breakdown */}
         {commuteType === 'carpool' && (
-          <View className="space-y-4">
+          <View className="gap-4">
             <Text className="text-sm font-semibold tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
               Which trips did you take?
             </Text>

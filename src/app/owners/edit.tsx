@@ -168,7 +168,7 @@ export default function EditOwnerScreen() {
         </View>
 
         {/* Default Fares */}
-        <View className="mb-4 space-y-4 rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
+        <View className="mb-4 gap-4 rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
           <Text className="text-xs font-semibold tracking-wider text-neutral-500 uppercase">
             Standard Default Fares
           </Text>

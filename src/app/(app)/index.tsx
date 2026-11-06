@@ -95,7 +95,7 @@ export default function HomeDashboardScreen() {
                   You haven’t recorded your commute for recent working days.
                 </Text>
 
-                <View className="mt-3 flex-row space-x-2">
+                <View className="mt-3 flex-row gap-2.5">
                   <TouchableOpacity
                     onPress={() => router.push('/bulk-log')}
                     className="rounded-lg bg-amber-600 px-3 py-1.5 active:bg-amber-700"
@@ -174,7 +174,7 @@ export default function HomeDashboardScreen() {
         </View>
 
         {/* Financial Overview Stat Grid */}
-        <View className="mb-5 flex-row space-x-3">
+        <View className="mb-5 flex-row gap-3">
           <View className="flex-1">
             <StatCard
               title="Total Outstanding"
@@ -197,7 +197,7 @@ export default function HomeDashboardScreen() {
         </View>
 
         {/* Quick Action Buttons */}
-        <View className="mb-6 flex-row space-x-2">
+        <View className="mb-6 flex-row gap-3">
           <TouchableOpacity
             onPress={() => router.push('/quick-log')}
             className="flex-1 flex-row items-center justify-center rounded-2xl bg-primary-600 py-3.5 shadow-sm active:bg-primary-700"
@@ -226,7 +226,7 @@ export default function HomeDashboardScreen() {
             </TouchableOpacity>
           </View>
 
-          <View className="space-y-3">
+          <View className="gap-3">
             {stats.owners.map(owner => (
               <TouchableOpacity
                 key={owner.id}
@@ -283,7 +283,7 @@ export default function HomeDashboardScreen() {
             </TouchableOpacity>
           </View>
 
-          <View className="space-y-2">
+          <View className="gap-2.5">
             {stats.recent_commutes.length === 0
               ? (
                   <View className="items-center rounded-2xl border border-dashed border-neutral-200 py-6 dark:border-neutral-800">
@@ -310,7 +310,7 @@ export default function HomeDashboardScreen() {
                           </View>
 
                           {commute.commute_type === 'carpool' && (
-                            <View className="mt-1 flex-row items-center space-x-2">
+                            <View className="mt-1 flex-row items-center gap-2">
                               {morning && (
                                 <Text className="text-[11px] text-neutral-500">
                                   ☀️
