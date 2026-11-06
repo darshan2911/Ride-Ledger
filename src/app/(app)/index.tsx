@@ -185,7 +185,7 @@ export default function HomeDashboardScreen() {
         <View className="mb-5 flex-row gap-3">
           <View className="flex-1">
             <StatCard
-              title="Total Outstanding"
+              title="Outstanding"
               value={formatPaise(stats.total_outstanding_paise)}
               subtitle="Pending to carpool owners"
               variant={stats.total_outstanding_paise > 0 ? 'warning' : 'success'}

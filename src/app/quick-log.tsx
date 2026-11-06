@@ -304,7 +304,7 @@ export default function QuickLogScreen() {
             onPress={() => setCommuteType('carpool')}
             className={`min-w-[45%] flex-1 flex-row items-center rounded-2xl border p-3.5 ${
               commuteType === 'carpool'
-                ? 'dark:bg-primary-950/30 border-primary-600 bg-primary-50 dark:border-primary-500'
+                ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-900/30'
                 : 'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'
             }`}
           >
@@ -317,15 +317,23 @@ export default function QuickLogScreen() {
             </View>
             <View className="ml-3">
               <Text
-                className={`font-semibold ${
+                className={`font-bold ${
                   commuteType === 'carpool'
-                    ? 'text-primary-950 dark:text-primary-100'
+                    ? 'text-primary-900 dark:text-primary-200'
                     : 'text-neutral-800 dark:text-neutral-200'
                 }`}
               >
                 Carpool
               </Text>
-              <Text className="text-xs text-neutral-500">Shared ride</Text>
+              <Text
+                className={`text-xs ${
+                  commuteType === 'carpool'
+                    ? 'text-primary-700 dark:text-primary-300/80'
+                    : 'text-neutral-500 dark:text-neutral-400'
+                }`}
+              >
+                Shared ride
+              </Text>
             </View>
           </TouchableOpacity>
 
@@ -495,7 +503,7 @@ export default function QuickLogScreen() {
                           onPress={() => setMorningOwnerId(owner.id)}
                           className={`flex-row items-center rounded-xl border px-3 py-2 ${
                             isSelected
-                              ? 'dark:bg-primary-950/30 border-primary-600 bg-primary-50 dark:border-primary-500'
+                              ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-900/30'
                               : 'border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-800/60'
                           }`}
                         >
@@ -577,7 +585,7 @@ export default function QuickLogScreen() {
                           onPress={() => setEveningOwnerId(owner.id)}
                           className={`flex-row items-center rounded-xl border px-3 py-2 ${
                             isSelected
-                              ? 'dark:bg-primary-950/30 border-primary-600 bg-primary-50 dark:border-primary-500'
+                              ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-900/30'
                               : 'border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-800/60'
                           }`}
                         >
@@ -616,12 +624,12 @@ export default function QuickLogScreen() {
             )}
 
             {/* Total Fare Summary Banner */}
-            <View className="flex-row items-center justify-between rounded-2xl bg-primary-600 p-4 shadow-sm">
+            <View className="flex-row items-center justify-between rounded-2xl bg-primary-600 p-4 shadow-sm dark:bg-primary-700">
               <View>
-                <Text className="text-xs font-semibold tracking-wider text-primary-100 uppercase">
+                <Text className="text-xs font-bold tracking-wider text-white/95 uppercase">
                   Total Carpool Expense
                 </Text>
-                <Text className="text-xs text-primary-200">
+                <Text className="mt-0.5 text-xs font-medium text-white/80">
                   {tripSelection === 'both'
                     ? 'Morning + Evening'
                     : tripSelection === 'morning'

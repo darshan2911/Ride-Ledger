@@ -1,0 +1,34 @@
+# RideLedger ECC (Everything Claude Code / Cursor Rules)
+
+## Project Overview
+RideLedger is a personal carpool & commute expense management application built with Expo SDK 54, React Native 0.81, SQLite, NativeWind (Tailwind CSS), and Android Native Kotlin Modules.
+
+## Architectural Guidelines & Invariants
+
+1. **Financial Integrity**:
+   - ALL monetary amounts MUST be stored and computed as integer **paise** (`1 Rupee = 100 paise`).
+   - Never perform arithmetic with floating-point rupees.
+   - Use `formatPaise()`, `rupeesToPaise()`, and `paiseToRupees()` from `@/lib/currency`.
+
+2. **Database Layer (SQLite via expo-sqlite)**:
+   - Synchronous transactional queries via `db.runSync()`, `db.getFirstSync()`, `db.getAllSync()`, `db.withTransactionSync()`.
+   - Maintain repository pattern in `src/db/repositories/`.
+   - Never inject mock/demo data on fresh installation or migrations.
+
+3. **Reactivity**:
+   - Trigger UI re-renders after mutations using `useRideLedgerStore.getState().triggerRefresh()`.
+
+4. **UI & Safe Areas**:
+   - Every screen MUST support edge-to-edge rendering with `useSafeAreaInsets()`.
+   - Apply `paddingTop: insets.top` on root headers and `paddingBottom: Math.max(20, insets.bottom + 12)` on bottom floating/submit bars.
+   - For flash messages/snackbars, use safe status bar insets.
+
+5. **Android Native Modules**:
+   - Exact daily reminders via `AlarmManager` and `CommuteReminderReceiver.kt`.
+   - Full overlay pop-up execution via `Settings.canDrawOverlays` and `RideLedgerOverlayModule.kt`.
+
+6. **Quality Commands**:
+   - Type check: `pnpm tsc --noEmit`
+   - Lint check: `pnpm lint`
+   - Tests: `pnpm test`
+

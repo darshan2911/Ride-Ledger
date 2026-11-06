@@ -1,70 +1,50 @@
-> This project was generated from the [Obytes React Native Template](https://github.com/obytes/react-native-template-obytes), a production-ready React Native starter with modern tooling and best practices.
+# RideLedger Agent & Claude Guidelines (ECC)
 
-## What: Technology Stack
+> Personal Carpool & Commute Expense Management Application
 
-- **Expo SDK 54** with React Native 0.81.5 - Managed React Native development
-- **TypeScript** - Strict type safety throughout
-- **Expo Router 6** - File-based routing (like Next.js)
-- **TailwindCSS** via Uniwind/Nativewind - Utility-first styling for React Native
-- **Zustand** - Lightweight global state management
-- **React Query** - Server state and data fetching
-- **TanStack Form + Zod** - Type-safe form handling and validation
-- **MMKV** - Encrypted local storage
-- **Jest + React Testing Library** - Unit testing
+## Tech Stack
+- **Expo SDK 54** with React Native 0.81.5 & New Architecture
+- **Expo Router 6** (File-based navigation under `src/app/`)
+- **NativeWind / TailwindCSS** styling (`src/global.css`)
+- **SQLite (`expo-sqlite`)** local database with audit logging
+- **Zustand** reactive store for state refreshes
+- **Android Native Kotlin**: Exact AlarmManager & `SYSTEM_ALERT_WINDOW` Overlay Popups
 
-## What: Project Structure
+## Financial Rules
+- **Paise Precision**: All monetary values in the database and calculations MUST be integers representing paise (`₹1 = 100 paise`).
+- **Currency Helpers**: Always use `@/lib/currency`:
+  - `formatPaise(paise: number)` -> `₹60`
+  - `rupeesToPaise(rupees: string | number)` -> `6000`
+  - `paiseToRupees(paise: number)` -> `60`
 
-```
-src/
-├── app/              # Expo Router file-based routes (add new routes here)
-├── features/         # Feature modules - auth, feed, settings are EXAMPLES
-├── components/ui/    # Pre-built UI components (button, input, modal, etc.)
-├── lib/              # Pre-configured utilities (api, auth, i18n, storage)
-├── translations/     # i18n files (en.json, ar.json - add more languages)
-└── global.css        # TailwindCSS configuration
+## Database Architecture
+- Tables: `carpool_owners`, `commute_days`, `commute_trips`, `payments`, `payment_allocations`, `app_settings`, `audit_logs`.
+- Repositories:
+  - `src/db/repositories/commutes.repo.ts`
+  - `src/db/repositories/owners.repo.ts`
+  - `src/db/repositories/payments.repo.ts`
+  - `src/db/repositories/analytics.repo.ts`
+  - `src/db/repositories/settings.repo.ts`
+  - `src/db/repositories/backup.repo.ts`
+- **Zero Mock Data**: No hardcoded mock drivers or rides. Clean database initialization.
 
-Root Files:
-├── env.ts           # Environment config (CUSTOMIZE bundle IDs, API URLs)
-├── app.config.ts    # Expo configuration
-└── README.md        # Project-specific documentation
-```
+## UI & Safe Area Standards
+- Status Bar: `FocusAwareStatusBar` with `paddingTop: insets.top` on top container.
+- Bottom Bars: `paddingBottom: Math.max(20, insets.bottom + 12)`.
+- Flash Messages: Mounted with `statusBarHeight={insets.top}` and `floating`.
+- Cards: On cards with trailing buttons/icons, always use `flex-1 mr-2` on text containers and `shrink-0` on buttons to prevent clipping on small screen devices.
 
-## How: Development Workflow
-
-**Essential Commands:**
+## Commands
 ```bash
-pnpm start              # Start dev server
-pnpm ios/android        # Run on platform
-pnpm lint               # ESLint check
-pnpm type-check         # TypeScript validation
-pnpm test               # Run Jest tests
-pnpm check-all          # All quality checks
+# Development
+pnpm start
+pnpm expo run:android
+
+# Quality & Verification
+pnpm tsc --noEmit
+pnpm lint --fix
+pnpm test
+
+# Standalone Release Build
+cd android && ./gradlew assembleRelease -x lint -x lintVitalAnalyzeRelease -x lintVitalRelease
 ```
-
-**Environment-Specific:**
-```bash
-pnpm start:preview              # Preview environment
-pnpm ios:production             # Production iOS
-pnpm build:production:ios       # EAS production build
-```
-
-## How: Key Patterns
-
-- **Create features**: New folder in `src/features/[your-feature]/` with screens, components, API hooks
-- **Add routes**: Create files in `src/app/` (file-based routing)
-- **Forms**: Use TanStack Form + Zod (see `src/features/auth/components/login-form.tsx`)
-- **Data fetching**: Use React Query (see `src/features/feed/api.ts`)
-- **Global state**: Use Zustand (see `src/features/auth/use-auth-store.tsx`)
-- **Styling**: NativeWind/Tailwind classes (see `src/components/ui/button.tsx`)
-- **Storage**: Use MMKV via `src/lib/storage.tsx` for sensitive data
-- **Imports**: Always use `@/` prefix, never relative imports
-
-## How: Essential Rules
-
-- ✅ **DO** use absolute imports: `@/components/ui/button`
-- ✅ **DO** follow feature-based structure: `src/features/[name]/`
-- ✅ **DO** use TanStack Form for forms (not react-hook-form)
-- ✅ **DO** use MMKV storage for sensitive data (not AsyncStorage)
-- ✅ **DO** use EAS Build for production: `pnpm build:production:ios`
-- ✅ **DO** prefix env vars with `EXPO_PUBLIC_*` for app access
-- ❌ **DO NOT** modify `android/` or `ios/` directly (use Expo config plugins)

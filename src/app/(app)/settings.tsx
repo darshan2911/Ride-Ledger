@@ -363,12 +363,12 @@ export default function SettingsScreen() {
       <ScrollView className="flex-1 px-5 py-4" showsVerticalScrollIndicator={false}>
         {/* Daily Commute Reminder Config */}
         <View className="mb-5 rounded-3xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center">
-              <View className="dark:bg-primary-950/40 rounded-xl bg-primary-50 p-2">
+          <View className="flex-row items-center justify-between gap-3">
+            <View className="mr-2 flex-1 flex-row items-center">
+              <View className="shrink-0 rounded-xl bg-primary-50 p-2 dark:bg-primary-900/40">
                 <Bell size={20} color="#4F46E5" />
               </View>
-              <View className="ml-3">
+              <View className="ml-3 flex-1">
                 <Text className="text-sm font-bold text-neutral-900 dark:text-white">
                   Daily Commute Reminder
                 </Text>
@@ -511,26 +511,26 @@ export default function SettingsScreen() {
 
         {/* Carpool Drivers Section */}
         <View className="mb-5 rounded-3xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center">
-              <View className="rounded-xl bg-emerald-50 p-2 dark:bg-emerald-950/40">
+          <View className="flex-row items-center justify-between gap-3">
+            <View className="mr-2 flex-1 flex-row items-center">
+              <View className="shrink-0 rounded-xl bg-emerald-50 p-2 dark:bg-emerald-950/40">
                 <Users size={20} color="#10b981" />
               </View>
-              <View className="ml-3">
+              <View className="ml-3 flex-1">
                 <Text className="text-sm font-bold text-neutral-900 dark:text-white">
                   Carpool Drivers
                 </Text>
                 <Text className="text-xs text-neutral-500">
-                  Default fares, active drivers & balances
+                  Default fares, drivers & balances
                 </Text>
               </View>
             </View>
 
             <TouchableOpacity
               onPress={() => router.push('/owners')}
-              className="rounded-xl bg-neutral-100 px-3 py-1.5 dark:bg-neutral-800"
+              className="shrink-0 rounded-xl bg-neutral-100 px-3.5 py-2 dark:bg-neutral-800"
             >
-              <Text className="text-xs font-bold text-primary-600">Manage</Text>
+              <Text className="text-xs font-bold text-primary-600 dark:text-primary-400">Manage</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -546,9 +546,9 @@ export default function SettingsScreen() {
               onPress={handleExportJson}
               className="flex-row items-center justify-between rounded-2xl border border-neutral-200 bg-neutral-50 p-3.5 dark:border-neutral-800 dark:bg-neutral-800/50"
             >
-              <View className="flex-row items-center">
-                <Download size={18} color="#4F46E5" />
-                <View className="ml-3">
+              <View className="mr-2 flex-1 flex-row items-center">
+                <Download size={18} color="#4F46E5" className="shrink-0" />
+                <View className="ml-3 flex-1">
                   <Text className="text-xs font-bold text-neutral-900 dark:text-white">
                     Export Full Database (JSON)
                   </Text>
@@ -563,9 +563,9 @@ export default function SettingsScreen() {
               onPress={handleExportCsv}
               className="flex-row items-center justify-between rounded-2xl border border-neutral-200 bg-neutral-50 p-3.5 dark:border-neutral-800 dark:bg-neutral-800/50"
             >
-              <View className="flex-row items-center">
-                <FileSpreadsheet size={18} color="#10b981" />
-                <View className="ml-3">
+              <View className="mr-2 flex-1 flex-row items-center">
+                <FileSpreadsheet size={18} color="#10b981" className="shrink-0" />
+                <View className="ml-3 flex-1">
                   <Text className="text-xs font-bold text-neutral-900 dark:text-white">
                     Export Commute History (CSV)
                   </Text>
@@ -580,9 +580,9 @@ export default function SettingsScreen() {
               onPress={handleImportJson}
               className="flex-row items-center justify-between rounded-2xl border border-neutral-200 bg-neutral-50 p-3.5 dark:border-neutral-800 dark:bg-neutral-800/50"
             >
-              <View className="flex-row items-center">
-                <Upload size={18} color="#d97706" />
-                <View className="ml-3">
+              <View className="mr-2 flex-1 flex-row items-center">
+                <Upload size={18} color="#d97706" className="shrink-0" />
+                <View className="ml-3 flex-1">
                   <Text className="text-xs font-bold text-neutral-900 dark:text-white">
                     Restore from JSON Backup
                   </Text>
@@ -606,9 +606,9 @@ export default function SettingsScreen() {
               onPress={handleResetCleanSlate}
               className="flex-row items-center justify-between rounded-2xl border border-amber-200 bg-amber-50/50 p-3.5 active:bg-amber-100/60 dark:border-amber-900/40 dark:bg-amber-950/20"
             >
-              <View className="flex-row items-center">
-                <RotateCcw size={18} color="#d97706" />
-                <View className="ml-3">
+              <View className="mr-2 flex-1 flex-row items-center">
+                <RotateCcw size={18} color="#d97706" className="shrink-0" />
+                <View className="ml-3 flex-1">
                   <Text className="text-xs font-bold text-amber-700 dark:text-amber-400">
                     Reset Commute History
                   </Text>
@@ -623,9 +623,9 @@ export default function SettingsScreen() {
               onPress={handleFactoryReset}
               className="flex-row items-center justify-between rounded-2xl border border-red-200 bg-red-50/50 p-3.5 active:bg-red-100/60 dark:border-red-900/40 dark:bg-red-950/20"
             >
-              <View className="flex-row items-center">
-                <Trash2 size={18} color="#ef4444" />
-                <View className="ml-3">
+              <View className="mr-2 flex-1 flex-row items-center">
+                <Trash2 size={18} color="#ef4444" className="shrink-0" />
+                <View className="ml-3 flex-1">
                   <Text className="text-xs font-bold text-red-600 dark:text-red-400">
                     Factory Reset (Wipe All Data)
                   </Text>
@@ -644,25 +644,29 @@ export default function SettingsScreen() {
             Appearance
           </Text>
 
-          <View className="flex-row gap-2">
-            {(['system', 'light', 'dark'] as const).map((t) => {
-              const isSelected = selectedTheme === t;
+          <View className="flex-row gap-2.5">
+            {[
+              { id: 'system' as const, label: 'System' },
+              { id: 'light' as const, label: 'Light' },
+              { id: 'dark' as const, label: 'Dark' },
+            ].map(({ id, label }) => {
+              const isSelected = selectedTheme === id;
               return (
                 <TouchableOpacity
-                  key={t}
-                  onPress={() => setSelectedTheme(t)}
-                  className={`flex-1 items-center rounded-xl border py-2.5 capitalize ${
+                  key={id}
+                  onPress={() => setSelectedTheme(id)}
+                  className={`flex-1 items-center justify-center rounded-xl border py-2.5 ${
                     isSelected
-                      ? 'dark:bg-primary-950/40 border-primary-600 bg-primary-50'
+                      ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-900/40'
                       : 'border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-800'
                   }`}
                 >
                   <Text
                     className={`text-xs font-bold ${
-                      isSelected ? 'text-primary-700 dark:text-primary-300' : 'text-neutral-600'
+                      isSelected ? 'text-primary-700 dark:text-primary-300' : 'text-neutral-700 dark:text-neutral-300'
                     }`}
                   >
-                    {t}
+                    {label}
                   </Text>
                 </TouchableOpacity>
               );

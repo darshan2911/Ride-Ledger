@@ -255,7 +255,10 @@ export default function EditOwnerScreen() {
       </ScrollView>
 
       {/* Save Button */}
-      <View className="border-t border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
+      <View
+        style={{ paddingBottom: Math.max(20, insets.bottom + 12) }}
+        className="border-t border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900"
+      >
         <TouchableOpacity
           onPress={handleSave}
           disabled={isSubmitting}

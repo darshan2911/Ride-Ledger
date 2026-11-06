@@ -147,42 +147,43 @@ export default function CalendarScreen() {
               }
 
               return (
-                <TouchableOpacity
-                  key={dateStr}
-                  onPress={() => setSelectedDate(dateStr)}
-                  className={`h-11 w-[14.28%] items-center justify-center rounded-xl p-0.5 ${
-                    isSelected
-                      ? 'bg-primary-600'
-                      : isToday
-                        ? 'border border-primary-500/50'
-                        : ''
-                  }`}
-                >
-                  <Text
-                    className={`text-xs font-semibold ${
+                <View key={dateStr} className="h-11 w-[14.28%] items-center justify-center p-0.5">
+                  <TouchableOpacity
+                    onPress={() => setSelectedDate(dateStr)}
+                    className={`size-9 items-center justify-center rounded-xl ${
                       isSelected
-                        ? 'text-white'
+                        ? 'bg-primary-600 shadow-sm'
                         : isToday
-                          ? 'font-bold text-primary-600 dark:text-primary-400'
-                          : 'text-neutral-800 dark:text-neutral-200'
+                          ? 'border border-primary-500/60 bg-primary-50/60 dark:bg-primary-900/30'
+                          : ''
                     }`}
                   >
-                    {dayNum}
-                  </Text>
+                    <Text
+                      className={`text-xs ${
+                        isSelected
+                          ? 'font-bold text-white'
+                          : isToday
+                            ? 'font-bold text-primary-600 dark:text-primary-400'
+                            : 'font-semibold text-neutral-800 dark:text-neutral-200'
+                      }`}
+                    >
+                      {dayNum}
+                    </Text>
 
-                  {/* Indicator Dot */}
-                  <View className="mt-0.5 size-1.5 items-center justify-center">
-                    {dotColor
-                      ? (
-                          <View
-                            className={`size-1.5 rounded-full ${
-                              isSelected ? 'bg-white' : dotColor
-                            }`}
-                          />
-                        )
-                      : null}
-                  </View>
-                </TouchableOpacity>
+                    {/* Indicator Dot */}
+                    <View className="mt-0.5 size-1.5 items-center justify-center">
+                      {dotColor
+                        ? (
+                            <View
+                              className={`size-1.5 rounded-full ${
+                                isSelected ? 'bg-white' : dotColor
+                              }`}
+                            />
+                          )
+                        : null}
+                    </View>
+                  </TouchableOpacity>
+                </View>
               );
             })}
           </View>

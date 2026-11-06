@@ -9,6 +9,7 @@ import { StyleSheet } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeConfig } from '@/components/ui/use-theme-config';
 import { initDatabase } from '@/db';
 import { APIProvider } from '@/lib/api';
@@ -82,6 +83,17 @@ export default function RootLayout() {
   );
 }
 
+function SafeFlashMessage() {
+  const insets = useSafeAreaInsets();
+  return (
+    <FlashMessage
+      position="top"
+      statusBarHeight={insets.top}
+      floating
+    />
+  );
+}
+
 function Providers({ children }: { children: React.ReactNode }) {
   const theme = useThemeConfig();
   return (
@@ -94,7 +106,7 @@ function Providers({ children }: { children: React.ReactNode }) {
           <APIProvider>
             <BottomSheetModalProvider>
               {children}
-              <FlashMessage position="top" />
+              <SafeFlashMessage />
             </BottomSheetModalProvider>
           </APIProvider>
         </ThemeProvider>

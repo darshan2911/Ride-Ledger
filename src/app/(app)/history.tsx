@@ -105,16 +105,21 @@ export default function HistoryScreen() {
         </View>
 
         {/* Commute Type Filters */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mt-3 flex-row gap-2">
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ gap: 8, paddingRight: 10 }}
+          className="mt-3"
+        >
           {(['all', 'carpool', 'own_vehicle', 'leave'] as const).map((type) => {
             const isSelected = commuteType === type;
             return (
               <TouchableOpacity
                 key={type}
                 onPress={() => setCommuteType(type)}
-                className={`rounded-xl border px-3 py-1.5 ${
+                className={`mr-2 rounded-xl border px-3.5 py-1.5 ${
                   isSelected
-                    ? 'dark:bg-primary-950/40 border-primary-600 bg-primary-50 dark:border-primary-500'
+                    ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-900/40'
                     : 'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'
                 }`}
               >

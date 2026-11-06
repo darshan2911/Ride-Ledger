@@ -45,11 +45,14 @@ export function StatCard({ title, value, subtitle, icon, variant = 'default' }: 
     <View
       className={`rounded-2xl border bg-white p-4 shadow-sm dark:bg-neutral-900 ${getBorderColor()}`}
     >
-      <View className="flex-row items-center justify-between">
-        <Text className="text-xs font-medium tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
+      <View className="flex-row items-center justify-between gap-1.5">
+        <Text
+          numberOfLines={1}
+          className="mr-1 flex-1 text-[11px] font-bold tracking-wide text-neutral-500 uppercase dark:text-neutral-400"
+        >
           {title}
         </Text>
-        {icon && <View className="opacity-80">{icon}</View>}
+        {icon && <View className="shrink-0 opacity-80">{icon}</View>}
       </View>
       <Text className={`mt-2 text-2xl font-bold tracking-tight ${getValueColor()}`}>
         {value}
