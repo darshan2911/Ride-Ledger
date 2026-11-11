@@ -22,13 +22,14 @@ import { CommuteBadge } from '@/components/ui/commute-badge';
 import { FocusAwareStatusBar } from '@/components/ui/focus-aware-status-bar';
 import { StatCard } from '@/components/ui/stat-card';
 import { Text } from '@/components/ui/text';
-import { formatDateFriendly, formatPaise, getTodayDateString } from '@/lib/currency';
-import { useDashboard } from '@/lib/hooks/use-rideledger';
+import { formatDateWithDay, formatPaise, getTodayDateString, getYesterdayDateString } from '@/lib/currency';
+import { useDashboard, useSettings } from '@/lib/hooks/use-rideledger';
 
 export default function HomeDashboardScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { stats, refresh } = useDashboard();
+  const { settings } = useSettings();
   const [refreshing, setRefreshing] = React.useState(false);
 
   const onRefresh = React.useCallback(() => {
@@ -38,6 +39,11 @@ export default function HomeDashboardScreen() {
   }, [refresh]);
 
   const todayStr = getTodayDateString();
+  const yesterdayStr = getYesterdayDateString();
+
+  const todayDate = new Date();
+  const todayIsoDay = todayDate.getDay() === 0 ? 7 : todayDate.getDay();
+  const isTodayWorkingDay = settings.working_days.includes(todayIsoDay);
 
   return (
     <View
@@ -132,26 +138,41 @@ export default function HomeDashboardScreen() {
                   Today’s Commute
                 </Text>
                 <Text className="text-base font-bold text-neutral-900 dark:text-white">
-                  {formatDateFriendly(todayStr)}
+                  {formatDateWithDay(todayStr)}
                 </Text>
               </View>
             </View>
 
-            <CommuteBadge type={stats.today_status} size="md" />
+            <CommuteBadge
+              type={stats.today_status === 'not_logged' && !isTodayWorkingDay ? 'week_off' : stats.today_status}
+              size="md"
+            />
           </View>
 
           {stats.today_status === 'not_logged'
             ? (
                 <View className="mt-4 border-t border-neutral-100 pt-3 dark:border-neutral-800">
                   <Text className="text-xs text-neutral-500">
-                    You haven’t recorded today’s trip yet. Takes ~5 seconds!
+                    {isTodayWorkingDay
+                      ? 'You haven’t recorded today’s trip yet. Takes ~5 seconds!'
+                      : 'Today is your scheduled week off. Rest day — no commute required.'}
                   </Text>
                   <TouchableOpacity
                     onPress={() => router.push('/quick-log')}
-                    className="mt-3 flex-row items-center justify-center rounded-2xl bg-primary-600 py-3 active:bg-primary-700"
+                    className={`mt-3 flex-row items-center justify-center rounded-2xl py-3 active:opacity-90 ${
+                      isTodayWorkingDay
+                        ? 'bg-primary-600 active:bg-primary-700'
+                        : 'border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800'
+                    }`}
                   >
-                    <Plus size={18} color="#ffffff" />
-                    <Text className="ml-2 text-sm font-bold text-white">Log Today’s Commute</Text>
+                    <Plus size={18} color={isTodayWorkingDay ? '#ffffff' : '#FF6C00'} />
+                    <Text
+                      className={`ml-2 text-sm font-bold ${
+                        isTodayWorkingDay ? 'text-white' : 'text-neutral-800 dark:text-neutral-200'
+                      }`}
+                    >
+                      {isTodayWorkingDay ? 'Log Today’s Commute' : '+ Log Commute Anyway'}
+                    </Text>
                   </TouchableOpacity>
                 </View>
               )
@@ -294,7 +315,7 @@ export default function HomeDashboardScreen() {
                       {formatPaise(owner.outstanding_balance_paise)}
                     </Text>
                     <Text className="text-[10px] text-neutral-400">
-                      {owner.last_payment_date ? `Paid ${formatDateFriendly(owner.last_payment_date)}` : 'No payments yet'}
+                      {owner.last_payment_date ? `Paid ${formatDateWithDay(owner.last_payment_date)}` : 'No payments yet'}
                     </Text>
                   </View>
 
@@ -335,10 +356,20 @@ export default function HomeDashboardScreen() {
                         className="flex-row items-center justify-between rounded-2xl border border-neutral-200 bg-white p-3.5 dark:border-neutral-800 dark:bg-neutral-900"
                       >
                         <View className="flex-1">
-                          <View className="flex-row items-center">
-                            <Text className="mr-2 text-xs font-bold text-neutral-900 dark:text-white">
-                              {formatDateFriendly(commute.date)}
+                          <View className="flex-row items-center gap-1.5">
+                            <Text className="text-xs font-bold text-neutral-900 dark:text-white">
+                              {formatDateWithDay(commute.date)}
                             </Text>
+                            {commute.date === todayStr && (
+                              <View className="rounded-sm bg-primary-100 px-1.5 py-0.5 dark:bg-primary-950/80">
+                                <Text className="text-[10px] font-bold text-primary-700 dark:text-primary-300">Today</Text>
+                              </View>
+                            )}
+                            {commute.date === yesterdayStr && (
+                              <View className="rounded-sm bg-neutral-100 px-1.5 py-0.5 dark:bg-neutral-800">
+                                <Text className="text-[10px] font-bold text-neutral-600 dark:text-neutral-400">Yesterday</Text>
+                              </View>
+                            )}
                             <CommuteBadge type={commute.commute_type} size="sm" />
                           </View>
 

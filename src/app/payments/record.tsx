@@ -25,8 +25,8 @@ import { FocusAwareStatusBar } from '@/components/ui/focus-aware-status-bar';
 import { selectableCardStyles } from '@/components/ui/selectable-card';
 import { Text } from '@/components/ui/text';
 import { PaymentsRepo } from '@/db';
-import { formatDateFriendly, formatPaise, getTodayDateString, paiseToRupees, rupeesToPaise } from '@/lib/currency';
-import { useOwner, useOwners, useOwnerTrips } from '@/lib/hooks/use-rideledger';
+import { formatDateWithDay, formatPaise, getTodayDateString, paiseToRupees, rupeesToPaise } from '@/lib/currency';
+import { useOwner, useOwners, useOwnerTrips, useSettings } from '@/lib/hooks/use-rideledger';
 import { useRideLedgerStore } from '@/lib/rideledger-store';
 
 export default function RecordPaymentScreen() {
@@ -34,6 +34,7 @@ export default function RecordPaymentScreen() {
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ ownerId?: string }>();
   const { owners } = useOwners(false);
+  const { settings } = useSettings();
   const triggerRefresh = useRideLedgerStore(s => s.triggerRefresh);
 
   const [selectedOwnerId, setSelectedOwnerId] = useState<string>(
@@ -42,10 +43,10 @@ export default function RecordPaymentScreen() {
 
   useEffect(() => {
     if (!selectedOwnerId && owners.length > 0) {
-      const defaultOwner = owners.find(o => o.is_default) || owners[0];
+      const defaultOwner = (settings?.default_owner_id ? owners.find(o => o.id === settings.default_owner_id) : null) || owners[0];
       setSelectedOwnerId(params.ownerId || defaultOwner.id);
     }
-  }, [owners, params.ownerId, selectedOwnerId]);
+  }, [owners, params.ownerId, selectedOwnerId, settings?.default_owner_id]);
 
   const { owner } = useOwner(selectedOwnerId);
   const unpaidTrips = useOwnerTrips(selectedOwnerId, 'unpaid');
@@ -357,11 +358,7 @@ export default function RecordPaymentScreen() {
                                     isSelected,
                                   )}`}
                                 >
-                                  {formatDateFriendly(t.date)}
-                                  {' '}
-                                  (
-                                  {t.date}
-                                  )
+                                  {formatDateWithDay(t.date)}
                                 </Text>
                                 <Text
                                   className={`text-[11px] capitalize ${selectableCardStyles.subtitle(

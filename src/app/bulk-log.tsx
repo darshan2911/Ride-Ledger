@@ -24,7 +24,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FocusAwareStatusBar } from '@/components/ui/focus-aware-status-bar';
 import { Text } from '@/components/ui/text';
 import { CommutesRepo } from '@/db';
-import { formatDateFriendly, rupeesToPaise } from '@/lib/currency';
+import { formatDateWithDay, rupeesToPaise } from '@/lib/currency';
 import { useOwners, useSettings, useUnloggedDates } from '@/lib/hooks/use-rideledger';
 import { useRideLedgerStore } from '@/lib/rideledger-store';
 
@@ -184,11 +184,7 @@ export default function BulkLogScreen() {
                                 : 'text-neutral-800 dark:text-neutral-200'
                             }`}
                           >
-                            {formatDateFriendly(d)}
-                            {' '}
-                            (
-                            {d}
-                            )
+                            {formatDateWithDay(d)}
                           </Text>
                         </View>
                         {isSelected

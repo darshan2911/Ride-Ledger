@@ -81,6 +81,51 @@ class CommuteReminderReceiver : BroadcastReceiver() {
             }
         }
 
+        fun setWorkingDays(context: Context, workingDaysStr: String) {
+            val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            prefs.edit().putString("working_days", workingDaysStr).apply()
+            Log.d(TAG, "Updated working_days in SharedPreferences: $workingDaysStr")
+        }
+
+        fun isTodayWorkingDay(context: Context): Boolean {
+            val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            var workingDaysStr = prefs.getString("working_days", null)
+
+            // If not in SharedPreferences, check SQLite database directly
+            if (workingDaysStr == null) {
+                val dbCandidates = listOf(
+                    context.getDatabasePath("rideledger.db"),
+                    File(context.filesDir, "SQLite/rideledger.db"),
+                    File(context.noBackupFilesDir, "SQLite/rideledger.db")
+                )
+                for (dbFile in dbCandidates) {
+                    if (dbFile.exists()) {
+                        try {
+                            val db = SQLiteDatabase.openDatabase(dbFile.path, null, SQLiteDatabase.OPEN_READONLY)
+                            val cursor = db.rawQuery("SELECT working_days FROM app_settings WHERE id = 'default'", null)
+                            if (cursor.moveToFirst()) {
+                                workingDaysStr = cursor.getString(0)
+                            }
+                            cursor.close()
+                            db.close()
+                            if (workingDaysStr != null) break
+                        } catch (e: Exception) {
+                            Log.w(TAG, "Error checking working_days in db: ${e.message}")
+                        }
+                    }
+                }
+            }
+
+            val workingDaysList = (workingDaysStr ?: "1,2,3,4,5").split(",")
+                .mapNotNull { it.trim().toIntOrNull() }
+
+            val calendar = Calendar.getInstance()
+            val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) // 1=Sun, 2=Mon... 7=Sat
+            val isoDay = if (dayOfWeek == Calendar.SUNDAY) 7 else dayOfWeek - 1 // 1=Mon ... 7=Sun
+
+            return workingDaysList.contains(isoDay)
+        }
+
         fun dismissNotification(context: Context) {
             try {
                 val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
@@ -185,8 +230,21 @@ class CommuteReminderReceiver : BroadcastReceiver() {
         if (ACTION_COMMUTE_REMINDER == action) {
             val isTest = intent.getBooleanExtra("is_test", false)
 
-            // Edge Case EC-A1: If today's commute is ALREADY logged, suppress popup & notification!
             if (!isTest) {
+                // Edge Case EC-W1: If today is a non-working day (week off), suppress popup & notification!
+                if (!isTodayWorkingDay(context)) {
+                    Log.d(TAG, "Today is a scheduled week off (non-working day)! Suppressing overlay popup & reminder notification.")
+                    // Reschedule for tomorrow's configured time
+                    val hour = prefs.getInt("reminder_hour", 21)
+                    val minute = prefs.getInt("reminder_minute", 0)
+                    val isEnabled = prefs.getBoolean("reminder_enabled", true)
+                    if (isEnabled) {
+                        scheduleAlarm(context, hour, minute)
+                    }
+                    return
+                }
+
+                // Edge Case EC-A1: If today's commute is ALREADY logged, suppress popup & notification!
                 val todayStr = getTodayDateString()
                 if (isDateLogged(context, todayStr)) {
                     Log.d(TAG, "Commute for today ($todayStr) has already been recorded! Suppressing overlay popup & notification.")

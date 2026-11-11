@@ -25,7 +25,7 @@ import { CommuteBadge } from '@/components/ui/commute-badge';
 import { FocusAwareStatusBar } from '@/components/ui/focus-aware-status-bar';
 import { Text } from '@/components/ui/text';
 import { CommutesRepo } from '@/db';
-import { formatDateFriendly, formatPaise } from '@/lib/currency';
+import { formatDateWithDay, formatPaise, getTodayDateString, getYesterdayDateString } from '@/lib/currency';
 import { useCommuteHistory } from '@/lib/hooks/use-rideledger';
 import { useRideLedgerStore } from '@/lib/rideledger-store';
 
@@ -33,6 +33,9 @@ export default function HistoryScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const triggerRefresh = useRideLedgerStore(s => s.triggerRefresh);
+
+  const todayStr = getTodayDateString();
+  const yesterdayStr = getYesterdayDateString();
 
   const [search, setSearch] = useState('');
   const [commuteType, setCommuteType] = useState<CommuteType | 'all'>('all');
@@ -188,14 +191,30 @@ export default function HistoryScreen() {
                 >
                   {/* Top line: Date, Badges & Actions */}
                   <View className="flex-row items-center justify-between">
-                    <View className="flex-row items-center">
-                      <Text className="mr-2 text-sm font-bold text-neutral-900 dark:text-white">
-                        {formatDateFriendly(item.date)}
-                        {' '}
-                        (
-                        {item.date}
-                        )
+                    <View className="flex-row items-center gap-1.5">
+                      <Text className="text-sm font-bold text-neutral-900 dark:text-white">
+                        {formatDateWithDay(item.date)}
                       </Text>
+                      {item.date === todayStr && (
+                        <View className="rounded-sm bg-primary-100 px-1.5 py-0.5 dark:bg-primary-950/80">
+                          <Text className="text-[10px] font-bold text-primary-700 dark:text-primary-300">Today</Text>
+                        </View>
+                      )}
+                      {item.date === yesterdayStr && (
+                        <View className="rounded-sm bg-neutral-100 px-1.5 py-0.5 dark:bg-neutral-800">
+                          <Text className="text-[10px] font-bold text-neutral-600 dark:text-neutral-400">Yesterday</Text>
+                        </View>
+                      )}
+                      {item.date === todayStr && (
+                        <View className="rounded-sm bg-primary-100 px-1.5 py-0.5 dark:bg-primary-950/80">
+                          <Text className="text-[10px] font-bold text-primary-700 dark:text-primary-300">Today</Text>
+                        </View>
+                      )}
+                      {item.date === yesterdayStr && (
+                        <View className="rounded-sm bg-neutral-100 px-1.5 py-0.5 dark:bg-neutral-800">
+                          <Text className="text-[10px] font-bold text-neutral-600 dark:text-neutral-400">Yesterday</Text>
+                        </View>
+                      )}
                       <CommuteBadge type={item.commute_type} size="sm" />
                     </View>
 

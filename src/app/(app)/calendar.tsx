@@ -19,7 +19,7 @@ import { CommuteBadge } from '@/components/ui/commute-badge';
 import { FocusAwareStatusBar } from '@/components/ui/focus-aware-status-bar';
 import { Text } from '@/components/ui/text';
 import { CommutesRepo } from '@/db';
-import { formatDateFriendly, formatPaise, getTodayDateString } from '@/lib/currency';
+import { formatDateWithDay, formatPaise, getTodayDateString } from '@/lib/currency';
 import { useCalendarRange, useSettings } from '@/lib/hooks/use-rideledger';
 
 export default function CalendarScreen() {
@@ -55,9 +55,23 @@ export default function CalendarScreen() {
   // Shift to start week with Monday (0=Mon ... 6=Sun)
   const startCol = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
 
+  const workingDaysList = useMemo(() => {
+    return settings?.working_days || [1, 2, 3, 4, 5];
+  }, [settings?.working_days]);
+
   const selectedCommute = useMemo(() => {
     return CommutesRepo.getCommuteByDate(selectedDate);
   }, [selectedDate, calendarMap]);
+
+  const isSelectedDateWorkingDay = useMemo(() => {
+    const parts = selectedDate.split('-');
+    if (parts.length !== 3)
+      return true;
+    const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    const day = d.getDay();
+    const isoDay = day === 0 ? 7 : day;
+    return workingDaysList.includes(isoDay);
+  }, [selectedDate, workingDaysList]);
 
   return (
     <View
@@ -128,7 +142,7 @@ export default function CalendarScreen() {
               const entry = calendarMap[dateStr];
               const dayDate = new Date(year, month, dayNum);
               const dayOfWeek = dayDate.getDay() === 0 ? 7 : dayDate.getDay();
-              const isWorkingDay = settings.working_days.includes(dayOfWeek);
+              const isWorkingDay = workingDaysList.includes(dayOfWeek);
               const isPast = dayDate < new Date(`${todayStr}T00:00:00`);
 
               let dotColor = '';
@@ -215,11 +229,7 @@ export default function CalendarScreen() {
                 Selected Date
               </Text>
               <Text className="text-lg font-bold text-neutral-900 dark:text-white">
-                {formatDateFriendly(selectedDate)}
-                {' '}
-                (
-                {selectedDate}
-                )
+                {formatDateWithDay(selectedDate)}
               </Text>
             </View>
 
@@ -227,9 +237,13 @@ export default function CalendarScreen() {
               ? (
                   <CommuteBadge type={selectedCommute.commute_type} size="md" />
                 )
-              : (
-                  <CommuteBadge type="not_logged" size="md" />
-                )}
+              : !isSelectedDateWorkingDay
+                  ? (
+                      <CommuteBadge type="week_off" size="md" />
+                    )
+                  : (
+                      <CommuteBadge type="not_logged" size="md" />
+                    )}
           </View>
 
           {selectedCommute
@@ -303,7 +317,9 @@ export default function CalendarScreen() {
             : (
                 <View className="mt-4 border-t border-neutral-100 pt-3 dark:border-neutral-800">
                   <Text className="text-xs text-neutral-500">
-                    No commute recorded for this day.
+                    {!isSelectedDateWorkingDay
+                      ? 'Scheduled week off. Rest day — no commute required.'
+                      : 'No commute recorded for this day.'}
                   </Text>
 
                   <TouchableOpacity
@@ -312,9 +328,7 @@ export default function CalendarScreen() {
                   >
                     <Plus size={16} color="#ffffff" />
                     <Text className="ml-2 text-xs font-bold text-white">
-                      Log For
-                      {' '}
-                      {selectedDate}
+                      {!isSelectedDateWorkingDay ? 'Log Commute Anyway' : `Log For ${selectedDate}`}
                     </Text>
                   </TouchableOpacity>
                 </View>

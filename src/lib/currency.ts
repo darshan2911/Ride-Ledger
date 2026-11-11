@@ -49,6 +49,39 @@ export function getYesterdayDateString(): string {
   return `${yyyy}-${mm}-${dd}`;
 }
 
+/**
+ * Formats a date string (YYYY-MM-DD) into:
+ * "Wed, Nov 11, 2026"
+ */
+export function formatDateWithDay(dateStr: string): string {
+  if (!dateStr)
+    return '';
+  const [yyyy, mm, dd] = dateStr.split('-').map(Number);
+  const d = new Date(yyyy, mm - 1, dd);
+  return d.toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
+
+/**
+ * Formats a date string (YYYY-MM-DD) into compact day + date:
+ * "Wed, Nov 11"
+ */
+export function formatDateShortWithDay(dateStr: string): string {
+  if (!dateStr)
+    return '';
+  const [yyyy, mm, dd] = dateStr.split('-').map(Number);
+  const d = new Date(yyyy, mm - 1, dd);
+  return d.toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  });
+}
+
 export function formatDateFriendly(dateStr: string): string {
   const today = getTodayDateString();
   if (dateStr === today)
@@ -58,20 +91,9 @@ export function formatDateFriendly(dateStr: string): string {
   if (dateStr === yesterday)
     return 'Yesterday';
 
-  const d = new Date(`${dateStr}T00:00:00`);
-  return d.toLocaleDateString('en-IN', {
-    day: 'numeric',
-    month: 'short',
-    year: d.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined,
-  });
+  return formatDateWithDay(dateStr);
 }
 
 export function formatDateFull(dateStr: string): string {
-  const d = new Date(`${dateStr}T00:00:00`);
-  return d.toLocaleDateString('en-IN', {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  });
+  return formatDateWithDay(dateStr);
 }

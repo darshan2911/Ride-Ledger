@@ -24,7 +24,7 @@ import { CommuteBadge } from '@/components/ui/commute-badge';
 import { FocusAwareStatusBar } from '@/components/ui/focus-aware-status-bar';
 import { Text } from '@/components/ui/text';
 import { OwnersRepo } from '@/db';
-import { formatDateFriendly, formatPaise } from '@/lib/currency';
+import { formatDateWithDay, formatPaise } from '@/lib/currency';
 import { useOwner, useOwnerPayments, useOwnerTrips } from '@/lib/hooks/use-rideledger';
 import { useRideLedgerStore } from '@/lib/rideledger-store';
 
@@ -181,7 +181,7 @@ export default function OwnerDetailsScreen() {
             <View className="flex-1">
               <Text className="text-[11px] text-neutral-400 uppercase">Last Payment</Text>
               <Text className="mt-0.5 text-xs font-medium text-neutral-600 dark:text-neutral-300">
-                {owner.last_payment_date ? formatDateFriendly(owner.last_payment_date) : 'Never'}
+                {owner.last_payment_date ? formatDateWithDay(owner.last_payment_date) : 'Never'}
               </Text>
             </View>
           </View>
@@ -320,11 +320,7 @@ export default function OwnerDetailsScreen() {
                         </View>
                         <View className="ml-3">
                           <Text className="text-xs font-bold text-neutral-900 dark:text-white">
-                            {formatDateFriendly(t.date)}
-                            {' '}
-                            (
-                            {t.date}
-                            )
+                            {formatDateWithDay(t.date)}
                           </Text>
                           <Text className="text-[11px] text-neutral-500 capitalize">
                             {t.trip_type}
@@ -370,11 +366,7 @@ export default function OwnerDetailsScreen() {
                   </View>
                   <View className="ml-3">
                     <Text className="text-xs font-bold text-neutral-900 dark:text-white">
-                      {formatDateFriendly(t.date)}
-                      {' '}
-                      (
-                      {t.date}
-                      )
+                      {formatDateWithDay(t.date)}
                     </Text>
                     <Text className="text-[11px] text-neutral-500 capitalize">
                       {t.trip_type}
@@ -414,7 +406,7 @@ export default function OwnerDetailsScreen() {
                           </Text>
                         </View>
                         <Text className="text-xs text-neutral-500">
-                          {formatDateFriendly(p.payment_date)}
+                          {formatDateWithDay(p.payment_date)}
                         </Text>
                       </View>
 

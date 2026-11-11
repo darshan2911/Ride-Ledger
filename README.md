@@ -49,29 +49,36 @@ If you carpool to work and pay drivers on a weekly or bi-weekly cycle, tracking 
 - **Editable Previous Records**: Edit past entries or log back-dated commutes without breaking audit trails.
 - **Missed Commute Detector & Bulk Logger**: Identifies unlogged working days and lets you record up to 14 days in a single tap.
 
-### 3. 👥 Carpool Driver & Ledger Management
+### 3. 🗓️ Smart Commute & Working Days Schedule
+- **Customizable Working Schedule**: Choose between **Mon – Fri (5d)**, **Mon – Sat (6d)**, **All 7 Days**, or tap individual day pills (**Mon**, **Tue**, **Wed**, **Thu**, **Fri**, **Sat**, **Sun**) to match your unique work week.
+- **Smart Week-Off Handling**: Background reminders and overlay pop-ups are automatically suppressed on scheduled week-offs.
+- **No False Missed Days**: The Missed Commute detector completely ignores week-offs and rest days.
+- **Rest Day UI**: Rest days are celebrated with an emerald `Week Off` badge on both Home and Calendar screens, while still allowing an optional `+ Log Commute Anyway` action.
+- **Human-Friendly Date Display**: Every date across the entire app displays with its weekday name (e.g. `Wed, Nov 11, 2026`).
+
+### 4. 👥 Carpool Driver & Ledger Management
 - Dedicated profiles for each driver (**Raj**, **Amit**, **Suresh**, etc.) with default morning and evening fares.
 - Real-time balance calculations: Total lifetime charges, total amount settled, pending unpaid trips, and last payment date.
 - Safe archiving: Inactive drivers can be archived without deleting historical financial records.
 
-### 4. 💳 Settlement & FIFO Payment Engine
+### 5. 💳 Settlement & FIFO Payment Engine
 - Settle outstanding balances with 1 tap using **UPI**, **Cash**, **Bank Transfer**, or **Other**.
 - Full or partial payment support: Uses a First-In-First-Out (FIFO) algorithm to mark oldest unpaid trips as paid first.
 - Pre-filled settlement amounts and direct links into payment logging.
 
-### 5. 📅 Interactive Calendar & History
+### 6. 📅 Interactive Calendar & History
 - Visual color-coded monthly calendar:
   - 🟣 **Purple**: Carpool Commute
   - 🔵 **Blue**: Own Bike / Vehicle
   - ⚪ **Grey**: Leave / Day Off
 - Complete searchable transaction history with filters by date, commute type, and driver.
 
-### 6. 📊 Analytics & Visual Breakdown
+### 7. 📊 Analytics & Visual Breakdown
 - Monthly spend trends, average daily commute cost, and carpool vs bike distribution.
 - Driver-wise expense distribution.
 - Complete monthly expense totals and carpool frequency counters.
 
-### 7. 💾 Offline JSON & CSV Backup
+### 8. 💾 Offline JSON & CSV Backup
 - **JSON Backup**: Export and restore your complete SQLite database (commutes, trips, drivers, payments, settings).
 - **CSV Export**: Export clean commute history for Excel, Google Sheets, or Apple Numbers.
 - **Clean Slate Reset**: 1-click option to clear test records while preserving your driver profiles.

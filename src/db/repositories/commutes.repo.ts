@@ -1,7 +1,6 @@
 import type {
   CommuteDay,
   CommuteDayWithTrips,
-  CommuteTrip,
   CommuteTripDetail,
   CommuteType,
   PaymentStatus,

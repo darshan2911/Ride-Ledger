@@ -92,6 +92,7 @@
     "carpoolDays": "carpool days",
     "editEntry": "Edit Entry",
     "fullHistory": "Full History",
+    "logAnyway": "Log Commute Anyway",
     "logCommute": "+ Log Commute",
     "logToday": "+ Log Today's Commute",
     "noOwners": "No Carpool Owners Added",
@@ -107,7 +108,9 @@
     "thisMonth": "This Month",
     "title": "RideLedger",
     "todayCommute": "TODAY'S COMMUTE",
-    "viewAll": "View All"
+    "viewAll": "View All",
+    "weekOffBadge": "Week Off",
+    "weekOffMsg": "Today is your scheduled week off. Rest day — no commute needed."
   },
   "onboarding": {
     "message": "Welcome to RideLedger"
@@ -194,7 +197,10 @@
     "title": "Settings",
     "version": "Version",
     "website": "Website",
-    "workingDays": "WORKING DAYS"
+    "workingDays": "WORKING DAYS",
+    "workingDaysHelp": "Reminders, pop-ups, and missed commute alerts will only trigger on your active days. Week-offs are never counted as pending.",
+    "workingDaysSubtitle": "Select active days you commute to work",
+    "workingDaysTitle": "Commute & Working Days"
   },
   "welcome": "Welcome to RideLedger"
 }

@@ -2,13 +2,8 @@ import type { AppSettings, CommuteDayWithTrips, CommuteType, DashboardStats, Mon
 import { useMemo } from 'react';
 import {
   AnalyticsRepo,
-
   CommutesRepo,
-
   OwnersRepo,
-
-  PaymentsRepo,
-
   SettingsRepo,
 } from '../../db';
 import { useRideLedgerStore } from '../rideledger-store';

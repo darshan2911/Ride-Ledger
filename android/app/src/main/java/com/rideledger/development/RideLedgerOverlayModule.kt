@@ -178,5 +178,15 @@ class RideLedgerOverlayModule(private val reactContext: ReactApplicationContext)
             promise.reject("CHECK_LOGGED_ERROR", e.message, e)
         }
     }
+
+    @ReactMethod
+    fun setWorkingDays(workingDays: String, promise: Promise) {
+        try {
+            CommuteReminderReceiver.setWorkingDays(reactContext, workingDays)
+            promise.resolve(true)
+        } catch (e: Exception) {
+            promise.reject("SET_WORKING_DAYS_ERROR", e.message, e)
+        }
+    }
 }
 

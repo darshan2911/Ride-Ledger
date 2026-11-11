@@ -6,6 +6,7 @@ import * as Sharing from 'expo-sharing';
 import {
   AlertCircle,
   Bell,
+  CalendarDays,
   CheckCircle2,
   Download,
   ExternalLink,
@@ -45,6 +46,32 @@ import {
 } from '@/lib/notifications';
 import { OverlayManager } from '@/lib/overlay';
 import { useRideLedgerStore } from '@/lib/rideledger-store';
+
+const DAYS_OF_WEEK = [
+  { id: 1, label: 'Mon' },
+  { id: 2, label: 'Tue' },
+  { id: 3, label: 'Wed' },
+  { id: 4, label: 'Thu' },
+  { id: 5, label: 'Fri' },
+  { id: 6, label: 'Sat' },
+  { id: 7, label: 'Sun' },
+];
+
+function getWorkingDaysSummary(days: number[]): string {
+  const sorted = [...days].sort((a, b) => a - b);
+  if (sorted.length === 5 && [1, 2, 3, 4, 5].every(d => sorted.includes(d))) {
+    return '5 Commute Days / Week • Sat & Sun Off';
+  }
+  if (sorted.length === 6 && [1, 2, 3, 4, 5, 6].every(d => sorted.includes(d))) {
+    return '6 Commute Days / Week • Sunday Off';
+  }
+  if (sorted.length === 7) {
+    return 'Everyday Commute (7 Days) • No Week Offs';
+  }
+  const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const activeNames = sorted.map(d => dayNames[d - 1]).join(', ');
+  return `${sorted.length} Days / Week • ${activeNames}`;
+}
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -141,6 +168,41 @@ export default function SettingsScreen() {
         type: 'success',
       });
     }
+  };
+
+  const handleToggleWorkingDay = async (dayId: number) => {
+    let nextDays: number[];
+    if (settings.working_days.includes(dayId)) {
+      if (settings.working_days.length <= 1) {
+        showMessage({
+          message: 'At least one working day required',
+          description: 'You must select at least 1 commute day per week.',
+          type: 'warning',
+        });
+        return;
+      }
+      nextDays = settings.working_days.filter(d => d !== dayId);
+    }
+    else {
+      nextDays = [...settings.working_days, dayId].sort((a, b) => a - b);
+    }
+    updateSettings({ working_days: nextDays });
+    await OverlayManager.setWorkingDays(nextDays);
+    showMessage({
+      message: 'Commute Schedule Updated',
+      description: `${nextDays.length} working days active. Week offs will not trigger alerts.`,
+      type: 'success',
+    });
+  };
+
+  const handleApplyPreset = async (presetDays: number[]) => {
+    updateSettings({ working_days: presetDays });
+    await OverlayManager.setWorkingDays(presetDays);
+    showMessage({
+      message: 'Commute Schedule Updated',
+      description: `${presetDays.length} working days active.`,
+      type: 'success',
+    });
   };
 
   const handleRequestOverlay = async () => {
@@ -434,6 +496,184 @@ export default function SettingsScreen() {
               </TouchableOpacity>
             </View>
           )}
+        </View>
+
+        {/* Commute & Working Days Schedule */}
+        <View className="mb-5 rounded-3xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+          <View className="flex-row items-center justify-between gap-3">
+            <View className="mr-2 flex-1 flex-row items-center">
+              <View className="shrink-0 rounded-xl bg-primary-50 p-2 dark:bg-primary-950/60">
+                <CalendarDays size={20} color="#FF6C00" />
+              </View>
+              <View className="ml-3 flex-1">
+                <Text className="text-sm font-bold text-neutral-900 dark:text-white">
+                  Commute & Working Days
+                </Text>
+                <Text className="text-xs text-neutral-500">
+                  Select active days you commute to work
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Quick Presets */}
+          <View className="mt-4 flex-row gap-2">
+            {[
+              { id: 'mon_fri', label: 'Mon – Fri (5d)', days: [1, 2, 3, 4, 5] },
+              { id: 'mon_sat', label: 'Mon – Sat (6d)', days: [1, 2, 3, 4, 5, 6] },
+              { id: 'all_7', label: 'All 7 Days', days: [1, 2, 3, 4, 5, 6, 7] },
+            ].map((preset) => {
+              const isActive
+                = settings.working_days.length === preset.days.length
+                  && preset.days.every(d => settings.working_days.includes(d));
+              return (
+                <TouchableOpacity
+                  key={preset.id}
+                  onPress={() => handleApplyPreset(preset.days)}
+                  className={`flex-1 items-center justify-center rounded-xl border py-2 ${
+                    isActive
+                      ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-950/60'
+                      : 'border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-800'
+                  }`}
+                >
+                  <Text
+                    className={`text-[11px] font-bold ${
+                      isActive
+                        ? 'text-primary-950 dark:text-primary-100'
+                        : 'text-neutral-700 dark:text-neutral-300'
+                    }`}
+                  >
+                    {preset.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
+          {/* Individual Day Buttons */}
+          <View className="mt-3.5 flex-row gap-1.5">
+            {DAYS_OF_WEEK.map((day) => {
+              const isSelected = settings.working_days.includes(day.id);
+              return (
+                <TouchableOpacity
+                  key={day.id}
+                  onPress={() => handleToggleWorkingDay(day.id)}
+                  className={`flex-1 items-center justify-center rounded-xl border py-2.5 ${
+                    isSelected
+                      ? 'border-primary-600 bg-primary-600 dark:border-primary-500 dark:bg-primary-500'
+                      : 'border-neutral-200 bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-800'
+                  }`}
+                >
+                  <Text
+                    className={`text-xs font-bold ${
+                      isSelected ? 'text-white' : 'text-neutral-500 dark:text-neutral-400'
+                    }`}
+                  >
+                    {day.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
+          {/* Schedule Summary & Guarantee */}
+          <View className="mt-4 rounded-2xl bg-neutral-50 p-3.5 dark:bg-neutral-800/60">
+            <Text className="text-xs font-bold text-neutral-800 dark:text-neutral-200">
+              {getWorkingDaysSummary(settings.working_days)}
+            </Text>
+            <Text className="mt-1 text-[11px]/4 text-neutral-500 dark:text-neutral-400">
+              ✓ Reminders, pop-ups, and missed commute alerts will only trigger on your active days. Week-offs are never counted as pending.
+            </Text>
+          </View>
+        </View>
+
+        {/* Commute & Working Days Schedule */}
+        <View className="mb-5 rounded-3xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+          <View className="flex-row items-center justify-between gap-3">
+            <View className="mr-2 flex-1 flex-row items-center">
+              <View className="shrink-0 rounded-xl bg-primary-50 p-2 dark:bg-primary-950/60">
+                <CalendarDays size={20} color="#FF6C00" />
+              </View>
+              <View className="ml-3 flex-1">
+                <Text className="text-sm font-bold text-neutral-900 dark:text-white">
+                  Commute & Working Days
+                </Text>
+                <Text className="text-xs text-neutral-500">
+                  Select active days you commute to work
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Quick Presets */}
+          <View className="mt-4 flex-row gap-2">
+            {[
+              { id: 'mon_fri', label: 'Mon – Fri (5d)', days: [1, 2, 3, 4, 5] },
+              { id: 'mon_sat', label: 'Mon – Sat (6d)', days: [1, 2, 3, 4, 5, 6] },
+              { id: 'all_7', label: 'All 7 Days', days: [1, 2, 3, 4, 5, 6, 7] },
+            ].map((preset) => {
+              const isActive
+                = settings.working_days.length === preset.days.length
+                  && preset.days.every(d => settings.working_days.includes(d));
+              return (
+                <TouchableOpacity
+                  key={preset.id}
+                  onPress={() => handleApplyPreset(preset.days)}
+                  className={`flex-1 items-center justify-center rounded-xl border py-2 ${
+                    isActive
+                      ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-950/60'
+                      : 'border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-800'
+                  }`}
+                >
+                  <Text
+                    className={`text-[11px] font-bold ${
+                      isActive
+                        ? 'text-primary-950 dark:text-primary-100'
+                        : 'text-neutral-700 dark:text-neutral-300'
+                    }`}
+                  >
+                    {preset.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
+          {/* Individual Day Buttons */}
+          <View className="mt-3.5 flex-row gap-1.5">
+            {DAYS_OF_WEEK.map((day) => {
+              const isSelected = settings.working_days.includes(day.id);
+              return (
+                <TouchableOpacity
+                  key={day.id}
+                  onPress={() => handleToggleWorkingDay(day.id)}
+                  className={`flex-1 items-center justify-center rounded-xl border py-2.5 ${
+                    isSelected
+                      ? 'border-primary-600 bg-primary-600 dark:border-primary-500 dark:bg-primary-500'
+                      : 'border-neutral-200 bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-800'
+                  }`}
+                >
+                  <Text
+                    className={`text-xs font-bold ${
+                      isSelected ? 'text-white' : 'text-neutral-500 dark:text-neutral-400'
+                    }`}
+                  >
+                    {day.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
+          {/* Schedule Summary & Guarantee */}
+          <View className="mt-4 rounded-2xl bg-neutral-50 p-3.5 dark:bg-neutral-800/60">
+            <Text className="text-xs font-bold text-neutral-800 dark:text-neutral-200">
+              {getWorkingDaysSummary(settings.working_days)}
+            </Text>
+            <Text className="mt-1 text-[11px]/4 text-neutral-500 dark:text-neutral-400">
+              ✓ Reminders, pop-ups, and missed commute alerts will only trigger on your active days. Week-offs are never counted as pending.
+            </Text>
+          </View>
         </View>
 
         {/* Display Over Other Apps (Overlay Pop-up) */}

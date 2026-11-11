@@ -11,7 +11,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeConfig } from '@/components/ui/use-theme-config';
-import { CommutesRepo, initDatabase } from '@/db';
+import { CommutesRepo, initDatabase, SettingsRepo } from '@/db';
 import { APIProvider } from '@/lib/api';
 import { getTodayDateString } from '@/lib/currency';
 import { loadSelectedTheme } from '@/lib/hooks/use-selected-theme';
@@ -63,9 +63,15 @@ export default function RootLayout() {
         OverlayManager.dismissReminderNotification().catch(() => {});
         OverlayManager.markTodayLogged(today, true).catch(() => {});
       }
+
+      // Sync working days schedule to native overlay receiver
+      const settings = SettingsRepo.getSettings();
+      if (settings?.working_days && settings.working_days.length > 0) {
+        OverlayManager.setWorkingDays(settings.working_days).catch(() => {});
+      }
     }
     catch (e) {
-      console.warn('Error syncing today commute status on launch:', e);
+      console.warn('Error syncing commute/settings status on launch:', e);
     }
 
     return () => subscription.remove();

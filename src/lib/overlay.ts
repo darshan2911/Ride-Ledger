@@ -169,4 +169,17 @@ export const OverlayManager = {
       return false;
     }
   },
+
+  async setWorkingDays(workingDays: number[]): Promise<boolean> {
+    if (Platform.OS !== 'android' || !RideLedgerOverlay?.setWorkingDays) {
+      return false;
+    }
+    try {
+      return await RideLedgerOverlay.setWorkingDays(workingDays.join(','));
+    }
+    catch (e) {
+      console.warn('Failed to sync working days with overlay:', e);
+      return false;
+    }
+  },
 };

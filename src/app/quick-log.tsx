@@ -5,7 +5,6 @@ import {
   Calendar as CalendarIcon,
   Car,
   Check,
-  ChevronDown,
   Home,
   Moon,
   Sun,
@@ -29,7 +28,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FocusAwareStatusBar } from '@/components/ui/focus-aware-status-bar';
 import { Text } from '@/components/ui/text';
 import { CommutesRepo } from '@/db';
-import { formatDateFriendly, formatPaise, getTodayDateString, getYesterdayDateString, rupeesToPaise } from '@/lib/currency';
+import { formatDateWithDay, formatPaise, getTodayDateString, getYesterdayDateString, rupeesToPaise } from '@/lib/currency';
 import { useOwners, useSettings } from '@/lib/hooks/use-rideledger';
 import { OverlayManager } from '@/lib/overlay';
 import { useRideLedgerStore } from '@/lib/rideledger-store';
@@ -214,8 +213,8 @@ export default function QuickLogScreen() {
         message: isExistingRecord ? 'Commute Updated! ✏️' : 'Commute Logged Successfully! 🚗',
         description:
           commuteType === 'carpool'
-            ? `Recorded ${formatPaise(calculatedTotalPaise)} for ${date}`
-            : `Recorded as ${commuteType.replace('_', ' ')} for ${date}`,
+            ? `Recorded ${formatPaise(calculatedTotalPaise)} for ${formatDateWithDay(date)}`
+            : `Recorded as ${commuteType.replace('_', ' ')} for ${formatDateWithDay(date)}`,
         type: 'success',
         icon: 'success',
       });
@@ -267,8 +266,7 @@ export default function QuickLogScreen() {
             )}
           </View>
           <Text className="text-xs text-neutral-500 dark:text-neutral-400">
-            {date === getTodayDateString() ? 'Today, ' : ''}
-            {date}
+            {formatDateWithDay(date)}
           </Text>
         </View>
         <TouchableOpacity
@@ -340,7 +338,7 @@ export default function QuickLogScreen() {
             {date !== getTodayDateString() && date !== getYesterdayDateString() && (
               <View className="rounded-lg bg-primary-600 px-2.5 py-1 dark:bg-primary-500">
                 <Text className="text-xs font-bold text-white">
-                  {formatDateFriendly(date)}
+                  {formatDateWithDay(date)}
                 </Text>
               </View>
             )}

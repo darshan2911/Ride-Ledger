@@ -92,6 +92,7 @@
     "carpoolDays": "أيام التوصيل",
     "editEntry": "تعديل السجل",
     "fullHistory": "السجل الكامل",
+    "logAnyway": "تسجيل رحلة على أي حال",
     "logCommute": "+ تسجيل رحلة",
     "logToday": "+ سجل رحلة اليوم",
     "noOwners": "لم تتم إضافة سائقين بعد",
@@ -107,7 +108,9 @@
     "thisMonth": "هذا الشهر",
     "title": "RideLedger",
     "todayCommute": "رحلة اليوم",
-    "viewAll": "عرض الكل"
+    "viewAll": "عرض الكل",
+    "weekOffBadge": "عطلة أسبوعية",
+    "weekOffMsg": "اليوم هو عطلتك المجدولة. يوم راحة — لا يلزم تنقل."
   },
   "onboarding": {
     "message": "مرحبا بكم في RideLedger"
@@ -194,7 +197,10 @@
     "title": "الإعدادات",
     "version": "إصدار",
     "website": "موقع الكتروني",
-    "workingDays": "أيام العمل"
+    "workingDays": "أيام العمل",
+    "workingDaysHelp": "لن يتم تفعيل التنبيهات واحتساب الرحلات الفائتة إلا في أيام العمل النشطة فقط.",
+    "workingDaysSubtitle": "حدد الأيام النشطة التي تتنقل فيها إلى العمل",
+    "workingDaysTitle": "جدول أيام العمل والتنقل"
   },
   "welcome": "مرحبا بكم في RideLedger"
 }

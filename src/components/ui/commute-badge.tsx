@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { Text } from './text';
 
 type CommuteBadgeProps = {
-  type: 'carpool' | 'own_vehicle' | 'leave' | 'other' | 'not_logged' | 'unpaid' | 'partially_paid' | 'paid';
+  type: 'carpool' | 'own_vehicle' | 'leave' | 'other' | 'not_logged' | 'week_off' | 'unpaid' | 'partially_paid' | 'paid';
   size?: 'sm' | 'md';
 };
 
@@ -30,6 +30,13 @@ export function CommuteBadge({ type, size = 'sm' }: CommuteBadgeProps) {
           bg: 'bg-neutral-100 dark:bg-neutral-800',
           text: 'text-neutral-600 dark:text-neutral-400',
           border: 'border-neutral-200 dark:border-neutral-700',
+        };
+      case 'week_off':
+        return {
+          label: 'Week Off',
+          bg: 'bg-emerald-50 dark:bg-emerald-950/40',
+          text: 'text-emerald-700 dark:text-emerald-300',
+          border: 'border-emerald-200 dark:border-emerald-800',
         };
       case 'not_logged':
         return {

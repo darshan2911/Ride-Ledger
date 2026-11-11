@@ -1,4 +1,4 @@
-import type { AppSettings, CarpoolOwner } from './types';
+import type { AppSettings } from './types';
 import * as SQLite from 'expo-sqlite';
 import { getTodayDateString } from '@/lib/currency';
 import { SCHEMA_STATEMENTS } from './schema';
