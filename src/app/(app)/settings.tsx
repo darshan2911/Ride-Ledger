@@ -38,6 +38,7 @@ import { Text } from '@/components/ui/text';
 import { BackupRepo, CommutesRepo, resetToFactoryCleanSlate } from '@/db';
 import { useSettings } from '@/lib/hooks/use-rideledger';
 import { useSelectedTheme } from '@/lib/hooks/use-selected-theme';
+import { translate } from '@/lib/i18n';
 import {
   cancelAllCommuteReminders,
   requestNotificationPermissions,
@@ -507,10 +508,10 @@ export default function SettingsScreen() {
               </View>
               <View className="ml-3 flex-1">
                 <Text className="text-sm font-bold text-neutral-900 dark:text-white">
-                  Commute & Working Days
+                  {translate('settings.workingDaysTitle')}
                 </Text>
                 <Text className="text-xs text-neutral-500">
-                  Select active days you commute to work
+                  {translate('settings.workingDaysSubtitle')}
                 </Text>
               </View>
             </View>
@@ -582,96 +583,9 @@ export default function SettingsScreen() {
               {getWorkingDaysSummary(settings.working_days)}
             </Text>
             <Text className="mt-1 text-[11px]/4 text-neutral-500 dark:text-neutral-400">
-              ✓ Reminders, pop-ups, and missed commute alerts will only trigger on your active days. Week-offs are never counted as pending.
-            </Text>
-          </View>
-        </View>
-
-        {/* Commute & Working Days Schedule */}
-        <View className="mb-5 rounded-3xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-          <View className="flex-row items-center justify-between gap-3">
-            <View className="mr-2 flex-1 flex-row items-center">
-              <View className="shrink-0 rounded-xl bg-primary-50 p-2 dark:bg-primary-950/60">
-                <CalendarDays size={20} color="#FF6C00" />
-              </View>
-              <View className="ml-3 flex-1">
-                <Text className="text-sm font-bold text-neutral-900 dark:text-white">
-                  Commute & Working Days
-                </Text>
-                <Text className="text-xs text-neutral-500">
-                  Select active days you commute to work
-                </Text>
-              </View>
-            </View>
-          </View>
-
-          {/* Quick Presets */}
-          <View className="mt-4 flex-row gap-2">
-            {[
-              { id: 'mon_fri', label: 'Mon – Fri (5d)', days: [1, 2, 3, 4, 5] },
-              { id: 'mon_sat', label: 'Mon – Sat (6d)', days: [1, 2, 3, 4, 5, 6] },
-              { id: 'all_7', label: 'All 7 Days', days: [1, 2, 3, 4, 5, 6, 7] },
-            ].map((preset) => {
-              const isActive
-                = settings.working_days.length === preset.days.length
-                  && preset.days.every(d => settings.working_days.includes(d));
-              return (
-                <TouchableOpacity
-                  key={preset.id}
-                  onPress={() => handleApplyPreset(preset.days)}
-                  className={`flex-1 items-center justify-center rounded-xl border py-2 ${
-                    isActive
-                      ? 'border-primary-600 bg-primary-50 dark:border-primary-500 dark:bg-primary-950/60'
-                      : 'border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-800'
-                  }`}
-                >
-                  <Text
-                    className={`text-[11px] font-bold ${
-                      isActive
-                        ? 'text-primary-950 dark:text-primary-100'
-                        : 'text-neutral-700 dark:text-neutral-300'
-                    }`}
-                  >
-                    {preset.label}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-
-          {/* Individual Day Buttons */}
-          <View className="mt-3.5 flex-row gap-1.5">
-            {DAYS_OF_WEEK.map((day) => {
-              const isSelected = settings.working_days.includes(day.id);
-              return (
-                <TouchableOpacity
-                  key={day.id}
-                  onPress={() => handleToggleWorkingDay(day.id)}
-                  className={`flex-1 items-center justify-center rounded-xl border py-2.5 ${
-                    isSelected
-                      ? 'border-primary-600 bg-primary-600 dark:border-primary-500 dark:bg-primary-500'
-                      : 'border-neutral-200 bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-800'
-                  }`}
-                >
-                  <Text
-                    className={`text-xs font-bold ${
-                      isSelected ? 'text-white' : 'text-neutral-500 dark:text-neutral-400'
-                    }`}
-                  >
-                    {day.label}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-
-          {/* Schedule Summary & Guarantee */}
-          <View className="mt-4 rounded-2xl bg-neutral-50 p-3.5 dark:bg-neutral-800/60">
-            <Text className="text-xs font-bold text-neutral-800 dark:text-neutral-200">
-              {getWorkingDaysSummary(settings.working_days)}
-            </Text>
-            <Text className="mt-1 text-[11px]/4 text-neutral-500 dark:text-neutral-400">
-              ✓ Reminders, pop-ups, and missed commute alerts will only trigger on your active days. Week-offs are never counted as pending.
+              ✓
+              {' '}
+              {translate('settings.workingDaysHelp')}
             </Text>
           </View>
         </View>
